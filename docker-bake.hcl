@@ -15,6 +15,18 @@ variable "revision" {
   default = ""
 }
 
+variable "citusVersionMap" {
+  type = map(string)
+  default = {
+    "13" = "11.3"
+    "14" = "12.1"
+    "15" = "13.1"
+    "16" = "13.1"
+    "17" = "13.1"
+    "18" = "13.1"
+  }
+}
+
 fullname = ( environment == "testing") ? "${registry}/postgresql-testing" : "${registry}/postgresql"
 now = timestamp()
 authors = "The CloudNativePG Contributors"
@@ -23,7 +35,8 @@ url = "https://github.com/cloudnative-pg/postgres-containers"
 extensions = [
   "pgaudit",
   "pgvector",
-  "pg-failover-slots"
+  "pg-failover-slots",
+  "citus"
 ]
 
 target "default" {
@@ -64,7 +77,8 @@ target "default" {
     PG_VERSION = "${pgVersion}"
     PG_MAJOR = "${getMajor(pgVersion)}"
     BASE = "${base}"
-    EXTENSIONS = "${getExtensionsString(pgVersion, extensions)}"
+    EXTENSIONS = "${getExtensionsString(pgVersion, extensions, citusVersionMap[getMajor(pgVersion)])}"
+    PRELOAD_LIBRARIES = "${join(",", extensions)}"
   }
   attest = [
     "type=provenance,mode=max",
@@ -133,6 +147,7 @@ function getMajor {
 }
 
 function getExtensionsString {
-    params = [ version, extensions ]
-    result = (isBeta(version) == true) ? "" : join(" ", formatlist("postgresql-%s-%s", getMajor(version), extensions))
+    params = [ version, extensions, citus_version ]
+    all_packages = join(" ", formatlist("postgresql-%s-%s", getMajor(version), extensions))
+    result = (isBeta(version) == true) ? "" : replace(all_packages, "postgresql-${getMajor(version)}-citus", "postgresql-${getMajor(version)}-citus-${citus_version}")
 }
