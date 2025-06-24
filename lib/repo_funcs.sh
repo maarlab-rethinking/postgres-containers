@@ -61,25 +61,16 @@ record_version() {
 
 get_citus_version() {
 	local pg_major="$1"
-	local citus_version=""
-	case "$pg_major" in
-		13)
-			citus_version="11.3"
-			;;
-		14)
-			citus_version="12.1"
-			;;
-		15)
-			citus_version="12.1"
-			;;
-		16)
-			citus_version="12.1"
-			;;
-		*)
-			citus_version="13.1"
-			;;
-	esac
-	echo "$citus_version"
+	local distro="$2"
+	local latest_citus_version
+	latest_citus_version=$( \
+		curl -sL "https://repos.citusdata.com/community/debian/dists/${distro}/main/binary-amd64/Packages.gz" | \
+		gunzip | \
+		sed -nE "s/^Package: postgresql-${pg_major}-citus-([0-9.]+)$/\1/p" | \
+		sort -Vr | \
+		head -n1 \
+	)
+	echo "$latest_citus_version"
 }
 
 generate_postgres() {
@@ -109,7 +100,7 @@ generate_postgres() {
 		exit 1
 	fi
 
-	citusVersion=$(get_citus_version "${version}")
+	citusVersion=$(get_citus_version "${version}" "${distro}")
 	if [ -z "$citusVersion" ]; then
 		echo "Unable to retrieve citus version for postgres ${version}"
 		exit 1
@@ -134,6 +125,7 @@ generate_postgres() {
 	if [ -f "${versionFile}" ]; then
 		oldImageReleaseVersion=$(jq -r '.IMAGE_RELEASE_VERSION' "${versionFile}")
 		oldBarmanVersion=$(jq -r '.BARMAN_VERSION' "${versionFile}")
+		oldCitusVersion=$(jq -r '.CITUS_VERSION // ""' "${versionFile}")
 		oldPostgresImageLastUpdate=$(jq -r '.POSTGRES_IMAGE_LAST_UPDATED' "${versionFile}")
 		oldPostgresImageVersion=$(jq -r '.POSTGRES_IMAGE_VERSION' "${versionFile}")
 		imageReleaseVersion=$oldImageReleaseVersion
@@ -142,6 +134,7 @@ generate_postgres() {
 		mkdir -p "${versionDir}" && echo "{}" > "${versionFile}"
 		record_version "${versionFile}" "IMAGE_RELEASE_VERSION" "${imageReleaseVersion}"
 		record_version "${versionFile}" "BARMAN_VERSION" "${barmanVersion}"
+		record_version "${versionFile}" "CITUS_VERSION" "${citusVersion}"
 		record_version "${versionFile}" "POSTGRES_IMAGE_LAST_UPDATED" "${postgresImageLastUpdate}"
 		record_version "${versionFile}" "POSTGRES_IMAGE_VERSION" "${postgresImageVersion}"
 		return
@@ -161,6 +154,13 @@ generate_postgres() {
 		echo "Barman changed from $oldBarmanVersion to $barmanVersion"
 		newRelease="true"
 		record_version "${versionFile}" "BARMAN_VERSION" "${barmanVersion}"
+	fi
+
+	# Detect an update of Citus
+	if [ "$oldCitusVersion" != "$citusVersion" ]; then
+		echo "Citus version changed from $oldCitusVersion to $citusVersion"
+		newRelease="true"
+		record_version "${versionFile}" "CITUS_VERSION" "${citusVersion}"
 	fi
 
 	# Detect an update of Dockerfile template
