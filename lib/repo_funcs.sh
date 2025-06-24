@@ -59,6 +59,29 @@ record_version() {
 	mv "${versionFile}.new" "${versionFile}"
 }
 
+get_citus_version() {
+	local pg_major="$1"
+	local citus_version=""
+	case "$pg_major" in
+		13)
+			citus_version="11.3"
+			;;
+		14)
+			citus_version="12.1"
+			;;
+		15)
+			citus_version="12.1"
+			;;
+		16)
+			citus_version="12.1"
+			;;
+		*)
+			citus_version="13.1"
+			;;
+	esac
+	echo "$citus_version"
+}
+
 generate_postgres() {
 	local version="$1"; shift
 	local distro="$1"; shift
@@ -83,6 +106,12 @@ generate_postgres() {
 	barmanVersion=$(get_latest_barman_version)
 	if [ -z "$barmanVersion" ]; then
 		echo "Unable to retrieve latest barman-cli-cloud version"
+		exit 1
+	fi
+
+	citusVersion=$(get_citus_version "${version}")
+	if [ -z "$citusVersion" ]; then
+		echo "Unable to retrieve citus version for postgres ${version}"
 		exit 1
 	fi
 
@@ -159,6 +188,7 @@ generate_postgres() {
 	sed -e 's/%%POSTGRES_IMAGE_VERSION%%/'"$postgresImageVersion"'/g' \
 		-e 's/%%IMAGE_RELEASE_VERSION%%/'"$imageReleaseVersion"'/g' \
 		-e 's/%%PIP_OPTIONS%%/'"${pipOptions}"'/g' \
+		-e 's/%%CITUS_VERSION%%/'"${citusVersion}"'/g' \
 		${dockerTemplate} \
 		> "$versionDir/Dockerfile"
 }
