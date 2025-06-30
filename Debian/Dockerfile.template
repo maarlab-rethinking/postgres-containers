@@ -37,9 +37,9 @@ RUN set -xe; \
 		exit 1; \
 	fi; \
 	apt-get install -y --no-install-recommends curl ca-certificates gnupg; \
-	mkdir -p /etc/apt/keyrings && \
-	curl -fsSL https://repos.citusdata.com/community/gpgkey | gpg --dearmor -o /etc/apt/keyrings/citusdata-community.gpg; \
-	echo "deb [signed-by=/etc/apt/keyrings/citusdata-community.gpg] https://repos.citusdata.com/community/debian/ $(. /etc/os-release && echo "$VERSION_CODENAME") main" > /etc/apt/sources.list.d/citus-community.list; \
+	mkdir -p /etc/apt/keyrings; \
+	curl -fsSL https://repo.pigsty.io/key | gpg --dearmor -o /etc/apt/keyrings/pigsty.gpg; \
+	echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/pgsql/$(. /etc/os-release && echo "$VERSION_CODENAME") $(. /etc/os-release && echo "$VERSION_CODENAME") main" > /etc/apt/sources.list.d/pigsty.list; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
 		"postgresql-${PG_MAJOR}-pgaudit" \
@@ -48,8 +48,8 @@ RUN set -xe; \
 		"postgresql-${PG_MAJOR}-%%CITUS_EXTENSION%%" \
 	; \
 	apt-get remove -y --purge --autoremove curl ca-certificates gnupg; \
-	rm /etc/apt/sources.list.d/citus-community.list; \
-	rm -f /etc/apt/keyrings/citusdata-community.gpg; \
+	rm /etc/apt/sources.list.d/pigsty.list; \
+	rm -f /etc/apt/keyrings/pigsty.gpg; \
 	rm -fr /tmp/* ; \
 	rm -rf /var/lib/apt/lists/*;
 

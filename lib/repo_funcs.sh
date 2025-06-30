@@ -65,7 +65,7 @@ get_latest_citus_info() {
 	local arch
 	arch=$(dpkg --print-architecture)
 	
-    curl -sL "https://repos.citusdata.com/community/debian/dists/${distro}/main/binary-${arch}/Packages.gz" | \
+	curl -sL "https://repo.pigsty.io/apt/pgsql/${distro}/dists/${distro}/main/binary-${arch}/Packages.gz" | \
 	gunzip | \
 	awk -v pg_major="${pg_major}" '
 		/^Package: postgresql-/ && $2 ~ ("^postgresql-" pg_major "-citus(-[0-9.]+)?$") {
