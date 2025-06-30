@@ -62,9 +62,12 @@ record_version() {
 get_citus_version() {
 	local pg_major="$1"
 	local distro="$2"
+	local arch
+	arch=$(dpkg --print-architecture)
 	local latest_citus_version
+	
 	latest_citus_version=$( \
-		curl -sL "https://repos.citusdata.com/community/debian/dists/${distro}/main/binary-amd64/Packages.gz" | \
+		curl -sL "https://repos.citusdata.com/community/debian/dists/${distro}/main/binary-${arch}/Packages.gz" | \
 		gunzip | \
 		sed -nE "s/^Package: postgresql-${pg_major}-citus-([0-9.]+)$/\1/p" | \
 		sort -Vr | \
