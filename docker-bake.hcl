@@ -148,6 +148,5 @@ function getMajor {
 
 function getExtensionsString {
     params = [ version, extensions, citus_version ]
-    all_packages = join(" ", formatlist("postgresql-%s-%s", getMajor(version), extensions))
-    result = (isBeta(version) == true) ? "" : replace(all_packages, "postgresql-${getMajor(version)}-citus", "postgresql-${getMajor(version)}-citus-${citus_version}")
+    result = (isBeta(version) == true) ? "" : replace(join(" ", formatlist("postgresql-%s-%s", getMajor(version), extensions)), "postgresql-${getMajor(version)}-citus", "postgresql-${getMajor(version)}-citus-${citus_version}")
 }
