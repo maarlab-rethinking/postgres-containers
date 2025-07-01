@@ -59,21 +59,25 @@ record_version() {
 	mv "${versionFile}.new" "${versionFile}"
 }
 
-get_citus_version() {
+get_latest_citus_info() {
 	local pg_major="$1"
 	local distro="$2"
 	local arch
 	arch=$(dpkg --print-architecture)
-	local latest_citus_version
 	
-	latest_citus_version=$( \
-		curl -sL "https://repos.citusdata.com/community/debian/dists/${distro}/main/binary-${arch}/Packages.gz" | \
-		gunzip | \
-		sed -nE "s/^Package: postgresql-${pg_major}-citus-([0-9.]+)$/\1/p" | \
-		sort -Vr | \
-		head -n1 \
-	)
-	echo "$latest_citus_version"
+    curl -sL "https://repos.citusdata.com/community/debian/dists/${distro}/main/binary-${arch}/Packages.gz" | \
+	gunzip | \
+	awk -v pg_major="${pg_major}" '
+		/^Package: postgresql-/ && $2 ~ ("^postgresql-" pg_major "-citus(-[0-9.]+)?$") {
+			pkg = $2
+		}
+		/^Version:/ && pkg {
+			print pkg, $2
+			pkg = ""
+		}
+	' | \
+	sort -k 2,2 -Vr | \
+	head -n 1
 }
 
 generate_postgres() {
@@ -103,11 +107,12 @@ generate_postgres() {
 		exit 1
 	fi
 
-	citusVersion=$(get_citus_version "${version}" "${distro}")
-	if [ -z "$citusVersion" ]; then
+	citusInfo=$(get_latest_citus_info "${version}" "${distro}")
+	if [ -z "$citusInfo" ]; then
 		echo "Unable to retrieve citus version for postgres ${version}"
 		exit 1
 	fi
+	read -r citusPackage citusVersion <<<"$citusInfo"
 
 	pipOptions=""
 	if [ "$distro" == "bookworm" ]; then
@@ -191,7 +196,7 @@ generate_postgres() {
 	sed -e 's/%%POSTGRES_IMAGE_VERSION%%/'"$postgresImageVersion"'/g' \
 		-e 's/%%IMAGE_RELEASE_VERSION%%/'"$imageReleaseVersion"'/g' \
 		-e 's/%%PIP_OPTIONS%%/'"${pipOptions}"'/g' \
-		-e 's/%%CITUS_VERSION%%/'"${citusVersion}"'/g' \
+		-e 's/%%CITUS_PACKAGE%%/'"${citusPackage}"'/g' \
 		${dockerTemplate} \
 		> "$versionDir/Dockerfile"
 }
