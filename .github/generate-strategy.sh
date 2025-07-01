@@ -84,7 +84,7 @@ generator() {
 		fi
 
 		# Supported platforms for container images
-		platforms="linux/amd64,linux/arm64"
+		platforms="linux/amd64"
 
 		# Build the json entry
 		entries+=(

@@ -62,7 +62,6 @@ target "default" {
   }
   platforms = [
     "linux/amd64",
-    "linux/arm64"
   ]
   dockerfile = "Dockerfile"
   name = "postgresql-${index(split(".",cleanVersion(pgVersion)),0)}-${tgt}-${distroVersion(base)}"
