@@ -72,7 +72,9 @@ get_latest_citus_info() {
 			pkg = $2
 		}
 		/^Version:/ && pkg {
-			print pkg, $2
+			match($2, /^[0-9]+\.[0-9]+\.[0-9]+/)
+			clean_ver = substr($2, RSTART, RLENGTH)
+			print pkg, clean_ver
 			pkg = ""
 		}
 	' | \
