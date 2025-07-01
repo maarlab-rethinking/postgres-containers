@@ -5,12 +5,12 @@ metadata:
 spec:
   images:
     - major: 13
-      image: ghcr.io/maarlab-rethinking/postgresql:13.21-10-bookworm@sha256:4931bcf2021084b2d132c3a11b919d1c26b7839826501d547950efcac3e02924
+      image: ghcr.io/maarlab-rethinking/postgresql:13.21-11-bookworm@sha256:f4004365a025f78e51e2ab7b3f3e030264f529ebd611712651ec93a0090ae39c
     - major: 14
-      image: ghcr.io/maarlab-rethinking/postgresql:14.18-10-bookworm@sha256:ffdd5a9cfda18b9854bbc5b3c8bc1dee98309aa64f7e38555cec4c744fbeb715
+      image: ghcr.io/maarlab-rethinking/postgresql:14.18-11-bookworm@sha256:9bdd98ee9e86d9ecd2fbea071d1b3caf425c7c8df77c3f12a24ef7588617080f
     - major: 15
-      image: ghcr.io/maarlab-rethinking/postgresql:15.13-10-bookworm@sha256:a9af782884d3a211d2daeb30ee888fb1ad4d036c4da72eb26d5b52b801c7acec
+      image: ghcr.io/maarlab-rethinking/postgresql:15.13-11-bookworm@sha256:9a2750be59844e394f7831a33745b414c47c7eba6411f710c0e970058651a4d8
     - major: 16
-      image: ghcr.io/maarlab-rethinking/postgresql:16.9-10-bookworm@sha256:7a4a826d0b3de5f09b6c63153ccab7f748cea0cc6001ec59e5e5078e95bd3d43
+      image: ghcr.io/maarlab-rethinking/postgresql:16.9-11-bookworm@sha256:e4d1c94a65e1c1281bee8e24d2e34aefd4dfbc4c955a8d9971aec1ef12c94f4b
     - major: 17
-      image: ghcr.io/maarlab-rethinking/postgresql:17.5-10-bookworm@sha256:eca280a5c0884d4db0a7eef46d1ca93337bc3b1b2cd853ff9ec44baf8cb9e35b
+      image: ghcr.io/maarlab-rethinking/postgresql:17.5-11-bookworm@sha256:059538bd8e681ab7c2a28b7d3786d1518af12910baa11805f523c8c60f3498ce
