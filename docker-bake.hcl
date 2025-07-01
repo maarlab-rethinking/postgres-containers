@@ -68,6 +68,7 @@ target "default" {
   tags = [
     "${fullname}:${index(split(".",cleanVersion(pgVersion)),0)}-${tgt}-${distroVersion(base)}",
     "${fullname}:${cleanVersion(pgVersion)}-${tgt}-${distroVersion(base)}",
+    "${fullname}:${cleanVersion(pgVersion)}-citus${citusVersionMap[getMajor(pgVersion)]}-${tgt}-${distroVersion(base)}",
     "${fullname}:${cleanVersion(pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${tgt}-${distroVersion(base)}"
   ]
   context = "."
