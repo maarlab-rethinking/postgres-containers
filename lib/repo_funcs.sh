@@ -4,8 +4,8 @@
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-# 
+# You may obtain a copy of the License at
+# 
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -70,6 +70,7 @@ get_latest_citus_info() {
 	awk -v pg_major="${pg_major}" '
 		/^Package: postgresql-/ && $2 ~ ("^postgresql-" pg_major "-citus(-[0-9.]+)?$") {
 			pkg = $2
+			sub("postgresql-" pg_major "-", "", pkg)
 		}
 		/^Version:/ && pkg {
 			match($2, /^[0-9]+\.[0-9]+\.[0-9]+/)
@@ -114,7 +115,7 @@ generate_postgres() {
 		echo "Unable to retrieve citus version for postgres ${version}"
 		exit 1
 	fi
-	read -r citusPackage citusVersion <<<"$citusInfo"
+	read -r citusPackageName citusVersion <<<"$citusInfo"
 
 	pipOptions=""
 	if [ "$distro" == "bookworm" ]; then
@@ -198,7 +199,7 @@ generate_postgres() {
 	sed -e 's/%%POSTGRES_IMAGE_VERSION%%/'"$postgresImageVersion"'/g' \
 		-e 's/%%IMAGE_RELEASE_VERSION%%/'"$imageReleaseVersion"'/g' \
 		-e 's/%%PIP_OPTIONS%%/'"${pipOptions}"'/g' \
-		-e 's/%%CITUS_PACKAGE%%/'"${citusPackage}"'/g' \
+		-e 's/%%CITUS_EXTENSION%%/'"${citusPackageName}"'/g' \
 		${dockerTemplate} \
 		> "$versionDir/Dockerfile"
 }
