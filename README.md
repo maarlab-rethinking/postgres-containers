@@ -22,8 +22,8 @@ environments.
 The CNPG PostgreSQL Container Images:
 
 - Are based on Debian Linux `stable` and `oldstable`
-- Support **multi-architecture builds**, including `linux/amd64` and
-  `linux/arm64`.
+- Support **`linux/amd64` builds**. Support for `linux/arm64` is temporarily
+  disabled due to the lack of official Citus packages for this architecture.
 - Include **build attestations**, such as Software Bills of Materials (SBOMs)
   and provenance metadata.
 - Are published on the
@@ -60,6 +60,7 @@ for example: `17.2-minimal-bookworm`.
 Standard images are an extension of the `minimal` images, enhanced with the
 following additional features:
 
+- Citus
 - PGAudit
 - Postgres Failover Slots
 - pgvector
@@ -81,6 +82,7 @@ maintained by the
 These images include additional software to extend PostgreSQL functionality:
 
 - Barman Cloud
+- Citus
 - PGAudit
 - Postgres Failover Slots
 - pgvector
@@ -154,6 +156,9 @@ Copyright The CloudNativePG Contributors.
 
 Barman Cloud is distributed by EnterpriseDB under the
 [GNU GPL 3 License](https://github.com/EnterpriseDB/barman/blob/master/LICENSE).
+
+Citus is distributed under the
+[PostgreSQL License](https://github.com/citusdata/citus/blob/main/LICENSE).
 
 PGAudit is distributed under the
 [PostgreSQL License](https://github.com/pgaudit/pgaudit/blob/master/LICENSE).
