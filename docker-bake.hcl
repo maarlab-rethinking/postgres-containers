@@ -15,18 +15,6 @@ variable "revision" {
   default = ""
 }
 
-variable "citusVersionMap" {
-  type = map(string)
-  default = {
-    "13" = "11.3"
-    "14" = "12.1"
-    "15" = "13.1"
-    "16" = "13.1"
-    "17" = "13.1"
-    "18" = "13.1"
-  }
-}
-
 fullname = ( environment == "testing") ? "${registry}/postgresql-testing" : "${registry}/postgresql"
 now = timestamp()
 authors = "The CloudNativePG Contributors"
@@ -76,7 +64,7 @@ target "default" {
     PG_VERSION = "${pgVersion}"
     PG_MAJOR = "${getMajor(pgVersion)}"
     BASE = "${base}"
-    EXTENSIONS = "${getExtensionsString(pgVersion, extensions, citusVersionMap[getMajor(pgVersion)])}"
+    EXTENSIONS = "${getExtensionsString(pgVersion, extensions)}"
     PRELOAD_LIBRARIES = "${join(",", extensions)}"
   }
   attest = [
@@ -146,6 +134,6 @@ function getMajor {
 }
 
 function getExtensionsString {
-    params = [ version, extensions, citus_version ]
-    result = (isBeta(version) == true) ? "" : replace(join(" ", formatlist("postgresql-%s-%s", getMajor(version), extensions)), "postgresql-${getMajor(version)}-citus", "postgresql-${getMajor(version)}-citus-${citus_version}")
+    params = [ version, extensions ]
+    result = (isBeta(version) == true) ? "" : join(" ", formatlist("postgresql-%s-%s", getMajor(version), extensions))
 }
