@@ -4,8 +4,8 @@
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-# 
+# You may obtain a copy of the License at
+# 
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -45,7 +45,7 @@ RUN set -xe; \
 		"postgresql-${PG_MAJOR}-pgaudit" \
 		"postgresql-${PG_MAJOR}-pgvector" \
 		"postgresql-${PG_MAJOR}-pg-failover-slots" \
-		"postgresql-15-citus-13.1" \
+		"postgresql-${PG_MAJOR}-citus-13.1" \
 	; \
 	apt-get remove -y --purge --autoremove curl ca-certificates gnupg; \
 	rm /etc/apt/sources.list.d/citus-community.list; \
