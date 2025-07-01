@@ -20,7 +20,7 @@ FROM postgres:14.18-bookworm
 LABEL name="PostgreSQL Container Images" \
       vendor="The CloudNativePG Contributors" \
       version="${PG_VERSION}" \
-      release="10" \
+      release="11" \
       summary="PostgreSQL Container images." \
       description="This Docker image contains PostgreSQL and Barman Cloud based on Postgres 14.18-bookworm."
 
@@ -45,7 +45,7 @@ RUN set -xe; \
 		"postgresql-${PG_MAJOR}-pgaudit" \
 		"postgresql-${PG_MAJOR}-pgvector" \
 		"postgresql-${PG_MAJOR}-pg-failover-slots" \
-		"postgresql-${PG_MAJOR}-citus-12.1" \
+		"postgresql-14-citus-12.1" \
 	; \
 	apt-get remove -y --purge --autoremove curl ca-certificates gnupg; \
 	rm /etc/apt/sources.list.d/citus-community.list; \
