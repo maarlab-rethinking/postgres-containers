@@ -32,6 +32,15 @@ now = timestamp()
 authors = "The CloudNativePG Contributors"
 url = "https://github.com/cloudnative-pg/postgres-containers"
 
+// PostgreSQL versions to build
+postgreSQLVersions = [
+  "13.22",
+  "14.19",
+  "15.14",
+  "16.10",
+  "17.6"
+]
+
 extensions = [
   "pgaudit",
   "pgvector",
@@ -45,15 +54,10 @@ target "default" {
       "minimal",
       "standard"
     ]
-    pgVersion = [
-      "13.22",
-      "14.19",
-      "15.14",
-      "16.10",
-      "17.6",
-      "18~beta3"
-    ]
+    pgVersion = postgreSQLVersions
     base = [
+      // renovate: datasource=docker versioning=loose
+      "debian:trixie-slim@sha256:c85a2732e97694ea77237c61304b3bb410e0e961dd6ee945997a06c788c545bb",
       // renovate: datasource=docker versioning=loose
       "debian:bookworm-slim@sha256:b1a741487078b369e78119849663d7f1a5341ef2768798f7b7406c4240f86aef",
       // renovate: datasource=docker versioning=loose

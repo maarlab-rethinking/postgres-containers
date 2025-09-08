@@ -1,4 +1,4 @@
-name: Automatic Updates
+name: Update PostgreSQL versions
 
 on:
   schedule:
@@ -20,39 +20,23 @@ jobs:
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
 
-      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6
-        with:
-          python-version: 3.9
-
       - name: Run update script
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3
         with:
           timeout_minutes: 15
           max_attempts: 3
           command: |
-            # pip-tools provides pip-compile used by update.sh
-            # TODO: Pinning pip due to https://github.com/jazzband/pip-tools/issues/2176, remove when fixed
-            pip3 install --upgrade pip-tools pip\<25.1
-            export PATH=$HOME/.local/bin:$PATH
-            echo "Updating Debian bullseye images"
-            ./Debian/update.sh -d bullseye
-
-      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6
-        with:
-          python-version: 3.11
-
-      - name: Run update script
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3
-        with:
-          timeout_minutes: 15
-          max_attempts: 3
-          command: |
-            # pip-tools provides pip-compile used by update.sh
-            # TODO: Pinning pip due to https://github.com/jazzband/pip-tools/issues/2176, remove when fixed
-            pip3 install --upgrade pip-tools pip\<25.1
-            export PATH=$HOME/.local/bin:$PATH
-            echo "Updating Debian bookworm images"
-            ./Debian/update.sh -d bookworm
+            VERSIONS="$(
+            curl -Ss -q https://www.postgresql.org/versions.json \
+            | jq -r '[.[] | select(.supported == true) | .major + "." + .latestMinor]
+            | sort
+            | map("  \"" + . + "\"")
+            | join(",\n")' \
+            | sed '1i postgreSQLVersions = [' \
+            | sed '$a ]'
+            )"
+            printf '%s\n' "$VERSIONS" \
+            | sed -i '/^postgreSQLVersions = \[/,/^]/d;/^\/\/ PostgreSQL versions/r /dev/stdin' docker-bake.hcl
 
       - name: Diff
         run: |
@@ -72,7 +56,7 @@ jobs:
         with:
           author_name: CloudNativePG Automated Updates
           author_email: noreply@cnpg.com
-          message: 'Daily automatic update'
+          message: 'chore: update PostgreSQL versions'
 
       - name: Enable "include administrators" branch protection
         uses: benjefferies/branch-protection-bot@af281f37de86139d1c7a27b91176b5dc1c2c827c # v1.1.2
