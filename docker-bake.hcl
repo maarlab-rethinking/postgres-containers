@@ -41,6 +41,17 @@ postgreSQLVersions = [
   "17.6"
 ]
 
+// PostgreSQL preview versions to build, such as "18~beta1" or "18~rc1"
+// Preview versions are automatically filtered out if present in the stable list
+// MANUALLY EDIT THE CONTENT - AND UPDATE THE README.md FILE TOO
+postgreSQLPreviewVersions = [
+  "18~rc1",
+]
+
+// Barman version to build
+# renovate: datasource=github-releases depName=EnterpriseDB/barman versioning=loose
+barmanVersion = "3.14.0"
+
 extensions = [
   "pgaudit",
   "pgvector",
@@ -52,16 +63,18 @@ target "default" {
   matrix = {
     tgt = [
       "minimal",
-      "standard"
+      "standard",
+      "system"
     ]
-    pgVersion = postgreSQLVersions
+    // Get the list of PostgreSQL versions, filtering preview versions if already stable
+    pgVersion = getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions)
     base = [
       // renovate: datasource=docker versioning=loose
-      "debian:trixie-slim@sha256:c85a2732e97694ea77237c61304b3bb410e0e961dd6ee945997a06c788c545bb",
+      "debian:trixie-slim@sha256:c2880112cc5c61e1200c26f106e4123627b49726375eb5846313da9cca117337",
       // renovate: datasource=docker versioning=loose
-      "debian:bookworm-slim@sha256:b1a741487078b369e78119849663d7f1a5341ef2768798f7b7406c4240f86aef",
+      "debian:bookworm-slim@sha256:df52e55e3361a81ac1bead266f3373ee55d29aa50cf0975d440c2be3483d8ed3",
       // renovate: datasource=docker versioning=loose
-      "debian:bullseye-slim@sha256:849d9d34d5fe0bf88b5fb3d09eb9684909ac4210488b52f4f7bbe683eedcb851"
+      "debian:bullseye-slim@sha256:6d3c63184632046054ae709964befc943ecffa140adc697ca955a10002a79c08"
     ]
   }
   platforms = [
@@ -69,12 +82,12 @@ target "default" {
   ]
   dockerfile = "Dockerfile"
   name = "postgresql-${index(split(".",cleanVersion(pgVersion)),0)}-${tgt}-${distroVersion(base)}"
-  tags = [
+  tags = concat([
     "${fullname}:${index(split(".",cleanVersion(pgVersion)),0)}-${tgt}-${distroVersion(base)}",
     "${fullname}:${cleanVersion(pgVersion)}-${tgt}-${distroVersion(base)}",
     "${fullname}:${cleanVersion(pgVersion)}-citus${citusVersionMap[getMajor(pgVersion)]}-${tgt}-${distroVersion(base)}",
-    "${fullname}:${cleanVersion(pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${tgt}-${distroVersion(base)}"
-  ]
+    "${fullname}:${cleanVersion(pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${tgt}-${distroVersion(base)}",
+  ], (tgt == "system" && distroVersion(base) == "bullseye" && isPreview(pgVersion) == "false") ? getRollingTags("${fullname}", pgVersion) : [])
   context = "."
   target = "${tgt}"
   args = {
@@ -83,6 +96,7 @@ target "default" {
     BASE = "${base}"
     EXTENSIONS = "${getExtensionsString(pgVersion, extensions, citusVersionMap[getMajor(pgVersion)])}"
     PRELOAD_LIBRARIES = "${join(",", extensions)}"
+    BARMAN_VERSION = "${barmanVersion}"
   }
   attest = [
     "type=provenance,mode=max",
@@ -140,17 +154,41 @@ function cleanVersion {
     result = replace(version, "~", "")
 }
 
-function isBeta {
+function isPreview {
     params = [ version ]
-    result = length(regexall("[0-9]+~beta.*", version)) > 0
+    result = length(regexall("[0-9]+~(alpha|beta|rc).*", version)) > 0
 }
 
 function getMajor {
     params = [ version ]
-    result = (isBeta(version) == true) ? index(split("~", version),0) : index(split(".", version),0)
+    result = (isPreview(version) == true) ? index(split("~", version),0) : index(split(".", version),0)
 }
 
 function getExtensionsString {
     params = [ version, extensions, citus_version ]
-    result = (isBeta(version) == true) ? "" : replace(join(" ", formatlist("postgresql-%s-%s", getMajor(version), extensions)), "postgresql-${getMajor(version)}-citus", "postgresql-${getMajor(version)}-citus-${citus_version}")
+    result = (isPreview(version) == true) ? "" : replace(join(" ", formatlist("postgresql-%s-%s", getMajor(version), extensions)), "postgresql-${getMajor(version)}-citus", "postgresql-${getMajor(version)}-citus-${citus_version}")
+}
+
+function isMajorPresent {
+  params = [major, pgVersions]
+  result = contains([for v in pgVersions : getMajor(v)], major)
+}
+
+function getPgVersions {
+  params = [stableVersions, previewVersions]
+  // Remove any preview version if already present as stable
+  result = concat(stableVersions,
+    [
+      for v in previewVersions : v
+      if !isMajorPresent(getMajor(v), stableVersions)
+    ]
+  )
+}
+
+function getRollingTags {
+    params = [ imageName, pgVersion ]
+    result = [
+      format("%s:%s", imageName, pgVersion),
+      format("%s:%s", imageName, getMajor(pgVersion))
+    ]
 }

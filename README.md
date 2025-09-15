@@ -1,53 +1,83 @@
 [![CloudNativePG](./logo/cloudnativepg.png)](https://cloudnative-pg.io/)
 
-> **IMPORTANT:** As of January 2025, we have transitioned to a new image build
-> process (see issue [#132](https://github.com/cloudnative-pg/postgres-containers/issues/132)
-> for details). Previously, the images were based on the
-> [Official Postgres image](https://hub.docker.com/_/postgres), maintained by the
-> [PostgreSQL Docker Community](https://github.com/docker-library/postgres),
-> and included Barman Cloud built from source.
-> This legacy approach, referred to as `system` images, will remain available
-> for backward compatibility but is planned for a future deprecation.
+> **IMPORTANT:** Starting in August 2025, the [Official Postgres Image](https://hub.docker.com/_/postgres),
+> maintained by the [PostgreSQL Docker Community](https://github.com/docker-library/postgres),
+> has discontinued support for Debian `bullseye`.
+> In response, the CloudNativePG project has completed the transition to the
+> new `bake`-based build process for all `system` images. We now build directly
+> on top of the official Debian slim images, fully detaching from the official
+> Postgres image.
 
 ---
 
 # CNPG PostgreSQL Container Images
 
-This repository provides maintenance scripts for generating **immutable
-application containers** for all supported PostgreSQL versions (13 to 17),
-as well as for PostgreSQL 18 beta.
+This repository provides maintenance scripts for generating
+**immutable application containers** for all supported
+[PostgreSQL major versions](https://www.postgresql.org/support/versioning/):
 
-These containers are designed to serve as **operands** for the
-[CloudNativePG (CNPG) operator](https://cloudnative-pg.io)
-within Kubernetes environments.
+| Version | Release Date | EOL        |
+|:-------:|:------------:|:----------:|
+|    17   | 2024-09-26   | 2029-11-08 |
+|    16   | 2023-09-14   | 2028-11-09 |
+|    15   | 2022-10-13   | 2027-11-11 |
+|    14   | 2021-09-30   | 2026-11-12 |
+|    13   | 2020-09-24   | 2025-11-13 |
+
+In addition, PostgreSQL 18 RC1 is provided for testing purposes only.
+
+These images are designed to serve as operands of the
+[CloudNativePG (CNPG) operator](https://cloudnative-pg.io) in Kubernetes
+environments, and are not intended for standalone use.
 
 ## Key Features
 
-The CNPG PostgreSQL Container Images:
+CloudNativePG PostgreSQL container images:
 
-- Are based on Debian Linux `stable` and `oldstable`
-- Support **`linux/amd64` builds**. Support for `linux/arm64` is temporarily
+- Are built on top of **Debian Linux** (`stable` and `oldstable`).
+- Provide **`linux/amd64` builds**. Support for `linux/arm64` is temporarily
   disabled due to the lack of official Citus packages for this architecture.
-- Include **build attestations**, such as Software Bills of Materials (SBOMs)
+- Ship with **build attestations**, such as Software Bills of Materials (SBOMs)
   and provenance metadata.
-- Are published on the
-  [CloudNativePG GitHub Container Registry](https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql).
-- Are **automatically rebuilt weekly** (every Monday) to ensure they remain
-  up-to-date.
+- Are published in the [CloudNativePG GitHub Container Registry](https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql).
+- Are **automatically rebuilt every week** (on Mondays) to remain up to date
+  with the latest upstream security and bug fixes.
+
+## Debian Releases
+
+CloudNativePG PostgreSQL container images are based on the official `stable`
+and `oldstable` Debian releases, maintained and supported by the
+[Debian Project](https://www.debian.org/releases/).
+
+The table below summarises the support lifecycle of relevant Debian versions,
+including End-of-Life (EOL) and Long-Term Support (LTS) dates.
+
+| Name                      | Version | Release Date |     EOL    |     LTS    |   Status   |
+| ------------------------- | :-----: | :----------: | :--------: | :--------: | :--------- |
+| Trixie (`stable`)         |    13   |  2025-08-09  | 2028-08-09 | 2030-06-30 | Supported  |
+| Bookworm (`oldstable`)    |    12   |  2023-06-10  | 2026-06-10 | 2028-06-30 | Supported  |
+| Bullseye (`oldoldstable`) |    11   |  2021-08-14  | 2024-08-14 | 2026-08-31 | Deprecated |
+
+> **IMPORTANT:** The CloudNativePG project provides full support for
+> Debian-based images until each release reaches its official End-of-Life
+> (EOL). After EOL and until the start of Long-Term Support (LTS), images for the
+> deprecated releases, such as `oldoldstable`, are maintained on a
+> **best-effort basis**. If discontinuation becomes necessary before the LTS
+> date, a minimum **three-month advance notice** will be posted on this page.
 
 ## Image Types
 
-We currently build and support two primary types of PostgreSQL images:
+We currently provide and maintain three main types of PostgreSQL images:
 
-- [`minimal`](#minimal-images)
-- [`standard`](#standard-images)
+* [`minimal`](#minimal-images)
+* [`standard`](#standard-images)
+* [`system`](#system-images) (*deprecated*)
 
-Both `minimal` and `standard` images are intended to be used with backup
-plugins, such as [Barman Cloud](https://github.com/cloudnative-pg/plugin-barman-cloud).
+Both `minimal` and `standard` images are designed to work with backup plugins
+such as [Barman Cloud](https://github.com/cloudnative-pg/plugin-barman-cloud).
 
-> **Note:** for backward compatibility, we also maintain the
-> [`system`](#system-images) image type. Switching from `system` images to
-> `minimal` or `standard` images on an existing cluster is not supported.
+The `system` images, built on top of the `standard` ones, also include the
+Barman Cloud binaries.
 
 ### Minimal Images
 
@@ -57,7 +87,7 @@ They use the [APT PostgreSQL packages](https://wiki.postgresql.org/wiki/Apt)
 maintained by the PostgreSQL Global Development Group (PGDG).
 
 These images are identified by the inclusion of `minimal` in their tag names,
-for example: `17.2-minimal-bookworm`.
+for example: `17.6-minimal-trixie`.
 
 ### Standard Images
 
@@ -71,19 +101,17 @@ following additional features:
 - All Locales
 
 Standard images are identifiable by the `standard` tag in their names, such as:
-`17.2-standard-bookworm`.
+`17.6-standard-trixie`.
 
 > **Note:** Standard images are designed to offer functionality equivalent to
 > the legacy `system` images when used with CloudNativePG. To achieve parity,
 > you must use the [Barman Cloud Plugin](https://github.com/cloudnative-pg/plugin-barman-cloud)
 > as a replacement for the native Barman Cloud support in `system` images.
 
-### System Images
+### System Images (deprecated)
 
-System images are based on the [Official Postgres image](https://hub.docker.com/_/postgres),
-maintained by the
-[PostgreSQL Docker Community](https://github.com/docker-library/postgres).
-These images include additional software to extend PostgreSQL functionality:
+Starting from September 2025, system images are based on the `standard` image
+and include Barman Cloud binaries.
 
 - Barman Cloud
 - Citus
@@ -91,14 +119,75 @@ These images include additional software to extend PostgreSQL functionality:
 - Postgres Failover Slots
 - pgvector
 
-The [`Debian`](Debian) folder contains image catalogs, which can be used as:
-- [`ClusterImageCatalog`](https://cloudnative-pg.io/documentation/current/image_catalog/)
-- [`ImageCatalog`](https://cloudnative-pg.io/documentation/current/image_catalog/)
+> **IMPORTANT:** The `system` images are deprecated and will be removed once
+> in-core support for Barman Cloud in CloudNativePG is phased out. While you
+> can still use them as long as in-core Barman Cloud remains available, you
+> should plan to migrate to either a `minimal` or `standard` image together
+> with the Barman Cloud plugin—or adopt another supported backup solution.
 
-> **Deprecation Notice:** System images and the associated Debian-based image
-> catalogs will be deprecated in future releases of CloudNativePG and
-> eventually removed. Users are encouraged to migrate to `minimal` or
-> `standard` images for new clusters as soon as feasible.
+## Image Tags
+
+Each image is identified by its digest and a main tag of the form:
+
+```
+MM.mm-TS-TYPE-OS
+```
+
+where:
+
+- `MM` is the PostgreSQL major version (e.g. `16`)
+- `mm` is the PostgreSQL minor version (e.g. `10`)
+- `TS` is the build timestamp with minute precision (e.g. `202509090953`)
+- `TYPE` is image type (e.g. `minimal`)
+- `OS` is the underlying distribution (e.g. `trixie`)
+
+For example: `16.10-202509090953-minimal-trixie`.
+
+### Rolling Tags
+
+In addition to fully qualified tags, rolling tags are available in the
+following formats:
+
+- `MM.mm-TYPE-OS`: latest image for a given PostgreSQL *minor* version
+  (`16.10`) of a specific type (`minimal`) on a Debian version (`trixie`).
+  For example: `16.10-minimal-trixie`.
+- `MM-TYPE-OS`: latest image for a given PostgreSQL *major* version (`16`) of
+  a specific type (`minimal`) on a Debian version (`trixie`).
+  For example: `16-minimal-trixie`.
+
+### Recommendation
+
+While the most reliable way to reference an image is by its digest, the
+`MM.mm-TYPE-OS` tag usually provides a good balance between stability and
+convenience for most use cases.
+
+### Deprecated Rolling Tags
+
+For historical reasons, the `system` image also carries two additional rolling
+tags:
+
+- `MM.mm`: latest `system` image for a given PostgreSQL *minor* version (e.g.
+  `16.10`) on Debian `bullseye`.
+- `MM`: latest `system` image for a given PostgreSQL *major* version (e.g.
+  `16`) on Debian `bullseye`.
+
+**IMPORTANT:** These tags are **deprecated** and will be **removed when
+`bullseye` images reach end of life**. Please migrate to one of the supported
+tag formats that explicitly include both the **image type** and the
+**distribution version** (e.g. `16.10-minimal-trixie`).
+
+## Image Catalogs
+
+CloudNativePG publishes `ClusterImageCatalog` manifests for CloudNativePG in
+the [`artifacts` repository](https://github.com/cloudnative-pg/artifacts/tree/main/image-catalogs),
+with one catalog available for each supported combination of image type and
+operating system version.
+
+**IMPORTANT:** If you are still relying on the legacy
+[`ClusterImageCatalog-bullseye.yaml`](Debian/ClusterImageCatalog-bullseye.yaml)
+and [`ClusterImageCatalog-bookworm.yaml`](Debian/ClusterImageCatalog-bookworm.yaml)
+manifests, please migrate to the new catalogs as soon as possible. These legacy
+manifests are deprecated and will be removed along with the `system` image.
 
 ## Build Attestations
 

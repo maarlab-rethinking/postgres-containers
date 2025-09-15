@@ -1,33 +1,28 @@
-name: Bake images
+name: Build target images
 
 on:
-  schedule:
-    - cron: 0 8 * * 1
-  workflow_dispatch:
+  workflow_call:
     inputs:
       environment:
-        type: choice
-        options:
-          - testing
-          - production
-        default: testing
-        description: "Choose the environment to bake the images for"
-      target:
+        description: "The environment to build for"
+        required: true
         type: string
-        default: ""
-        description: "A comma separated list of targets to build. If empty, all targets will be built."
+        default: "testing"
+      postgresql_version:
+        description: "The PostgreSQL major version to bake"
+        required: true
+        type: string
 
-permissions: read-all
+permissions: {}
 
 jobs:
-  # Start by building images for testing. We want to run security checks before pushing those to production.
   testbuild:
-    name: Build for testing
-    runs-on: ubuntu-latest
+    # Start by building images for testing. We want to run security checks before pushing those to production.
+    name: PostgreSQL ${{ inputs.postgresql_version }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
-      security-events: write
       # Required by the cosign step
       id-token: write
     outputs:
@@ -36,6 +31,19 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: List targets
+        id: targets
+        uses: docker/bake-action/subaction/matrix@3acf805d94d93a86cce4ca44798a76464a75b88c # v6
+        with:
+          target: "default"
+
+      - name: Filter by versions
+        id: extract_targets
+        run: |
+          target=$(echo '${{ steps.targets.outputs.matrix }}' | jq -r '.[] | .[] | select(match("${{ inputs.postgresql_version }}"))' | xargs echo | sed 's/ /,/g')
+          echo "Targets for PostgreSQL ${{ inputs.postgresql_version }}: $target"
+          echo "filtered_targets=$target" >> "$GITHUB_OUTPUT"
 
       - name: Log in to the GitHub Container registry
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
@@ -50,6 +58,9 @@ jobs:
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
         with:
           platforms: 'arm64'
+          # TODO: remove this line once https://github.com/tonistiigi/binfmt/issues/258
+          # will be released
+          image: tonistiigi/binfmt:master
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
@@ -63,7 +74,7 @@ jobs:
           revision: ${{ github.sha }}
         with:
           push: true
-          targets: ${{ github.event.inputs.target }}
+          targets: ${{ steps.extract_targets.outputs.filtered_targets }}
 
       # Get a list of the images that were built and pushed. We only care about a single tag for each image.
       - name: Generated images
@@ -86,6 +97,10 @@ jobs:
   security:
     name: Security checks
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      security-events: write
     needs:
       - testbuild
     strategy:
@@ -107,6 +122,9 @@ jobs:
         with:
           image: ${{ matrix.image }}
           exit-code: '1'
+          failure-threshold: WARN
+          accept-keywords: key
+          accept-filenames: usr/share/postgresql-common/pgdg/apt.postgresql.org.asc,etc/ssl/private/ssl-cert-snakeoil.key,usr/local/lib/python3.9/dist-packages/azure/core/settings.py,usr/local/lib/python3.11/dist-packages/azure/core/settings.py,usr/local/lib/python3.13/dist-packages/azure/core/settings.py
 
       - name: Snyk
         uses: snyk/actions/docker@master
@@ -118,7 +136,7 @@ jobs:
           args: --severity-threshold=high --file=Dockerfile
 
       - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@2d92b76c45b91eb80fc44c74ce3fce0ee94e8f9d # v3
+        uses: github/codeql-action/upload-sarif@192325c86100d080feab897ff886c34abd4c83a3 # v3
         continue-on-error: true
         with:
           sarif_file: snyk.sarif
@@ -188,4 +206,4 @@ jobs:
             '
           )
           echo "Signing ${images}"
-          cosign sign --yes ${images}
+          cosign sign -t 5m --yes ${images}
