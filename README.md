@@ -39,7 +39,7 @@ CloudNativePG PostgreSQL container images:
   disabled due to the lack of official Citus packages for this architecture.
 - Ship with **build attestations**, such as Software Bills of Materials (SBOMs)
   and provenance metadata.
-- Are published in the [CloudNativePG GitHub Container Registry](https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql).
+- Are published in the [Maarlab-Rethinking GitHub Container Registry](https://github.com/maarlab-rethinking/postgres-containers/pkgs/container/postgresql).
 - Are **automatically rebuilt every week** (on Mondays) to remain up to date
   with the latest upstream security and bug fixes.
 
@@ -227,7 +227,7 @@ This signing process is automated via GitHub Actions and leverages
 
 The token issuer is `https://token.actions.githubusercontent.com`, and the
 signing identity corresponds to a GitHub workflow executed under the
-`cloudnative-pg/postgres-containers` repository. This workflow uses the
+`maarlab-rethinking/postgres-containers` repository. This workflow uses the
 [`cosign-installer` action](https://github.com/marketplace/actions/cosign-installer)
 to facilitate the signing process.
 
@@ -236,7 +236,7 @@ following `cosign` command:
 
 ```sh
 cosign verify IMAGE \
-  --certificate-identity-regexp="^https://github.com/cloudnative-pg/postgres-containers/" \
+  --certificate-identity-regexp="^https://github.com/maarlab-rethinking/postgres-containers/" \
   --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
 ```
 

@@ -18,7 +18,7 @@ variable "revision" {
 fullname = ( environment == "testing") ? "${registry}/postgresql-testing" : "${registry}/postgresql"
 now = timestamp()
 authors = "The CloudNativePG Contributors"
-url = "https://github.com/cloudnative-pg/postgres-containers"
+url = "https://github.com/maarlab-rethinking/postgres-containers"
 
 // PostgreSQL versions to build
 postgreSQLVersions = [
@@ -109,7 +109,7 @@ target "default" {
     "index,manifest:org.opencontainers.image.vendor=${authors}",
     "index,manifest:org.opencontainers.image.title=CloudNativePG PostgreSQL ${pgVersion} ${tgt}",
     "index,manifest:org.opencontainers.image.description=A ${tgt} PostgreSQL ${pgVersion} container image",
-    "index,manifest:org.opencontainers.image.documentation=https://github.com/cloudnative-pg/postgres-containers",
+    "index,manifest:org.opencontainers.image.documentation=https://github.com/maarlab-rethinking/postgres-containers",
     "index,manifest:org.opencontainers.image.authors=${authors}",
     "index,manifest:org.opencontainers.image.licenses=Apache-2.0",
     "index,manifest:org.opencontainers.image.base.name=docker.io/library/${tag(base)}",
