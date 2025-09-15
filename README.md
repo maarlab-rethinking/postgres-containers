@@ -54,7 +54,7 @@ including End-of-Life (EOL) and Long-Term Support (LTS) dates.
 
 | Name                      | Version | Release Date |     EOL    |     LTS    |   Status   |
 | ------------------------- | :-----: | :----------: | :--------: | :--------: | :--------- |
-| Trixie (`stable`)         |    13   |  2025-08-09  | 2028-08-09 | 2030-06-30 | Supported  |
+| Trixie (`stable`)         |    13   |  2025-08-09  | 2028-08-09 | 2030-06-30 | Disabled*  |
 | Bookworm (`oldstable`)    |    12   |  2023-06-10  | 2026-06-10 | 2028-06-30 | Supported  |
 | Bullseye (`oldoldstable`) |    11   |  2021-08-14  | 2024-08-14 | 2026-08-31 | Deprecated |
 
@@ -64,6 +64,10 @@ including End-of-Life (EOL) and Long-Term Support (LTS) dates.
 > deprecated releases, such as `oldoldstable`, are maintained on a
 > **best-effort basis**. If discontinuation becomes necessary before the LTS
 > date, a minimum **three-month advance notice** will be posted on this page.
+
+> **NOTE:** *Trixie-based images are temporarily disabled due to the lack of
+> official Citus packages for this Debian version. Support will be enabled once
+> Citus packages become available for Trixie.
 
 ## Image Types
 
@@ -87,7 +91,7 @@ They use the [APT PostgreSQL packages](https://wiki.postgresql.org/wiki/Apt)
 maintained by the PostgreSQL Global Development Group (PGDG).
 
 These images are identified by the inclusion of `minimal` in their tag names,
-for example: `17.6-minimal-trixie`.
+for example: `17.6-minimal-bookworm`.
 
 ### Standard Images
 
@@ -101,7 +105,7 @@ following additional features:
 - All Locales
 
 Standard images are identifiable by the `standard` tag in their names, such as:
-`17.6-standard-trixie`.
+`17.6-standard-bookworm`.
 
 > **Note:** Standard images are designed to offer functionality equivalent to
 > the legacy `system` images when used with CloudNativePG. To achieve parity,
@@ -139,9 +143,9 @@ where:
 - `mm` is the PostgreSQL minor version (e.g. `10`)
 - `TS` is the build timestamp with minute precision (e.g. `202509090953`)
 - `TYPE` is image type (e.g. `minimal`)
-- `OS` is the underlying distribution (e.g. `trixie`)
+- `OS` is the underlying distribution (e.g. `bookworm`)
 
-For example: `16.10-202509090953-minimal-trixie`.
+For example: `16.10-202509090953-minimal-bookworm`.
 
 ### Rolling Tags
 
@@ -149,11 +153,11 @@ In addition to fully qualified tags, rolling tags are available in the
 following formats:
 
 - `MM.mm-TYPE-OS`: latest image for a given PostgreSQL *minor* version
-  (`16.10`) of a specific type (`minimal`) on a Debian version (`trixie`).
-  For example: `16.10-minimal-trixie`.
+  (`16.10`) of a specific type (`minimal`) on a Debian version (`bookworm`).
+  For example: `16.10-minimal-bookworm`.
 - `MM-TYPE-OS`: latest image for a given PostgreSQL *major* version (`16`) of
-  a specific type (`minimal`) on a Debian version (`trixie`).
-  For example: `16-minimal-trixie`.
+  a specific type (`minimal`) on a Debian version (`bookworm`).
+  For example: `16-minimal-bookworm`.
 
 ### Recommendation
 
@@ -174,7 +178,7 @@ tags:
 **IMPORTANT:** These tags are **deprecated** and will be **removed when
 `bullseye` images reach end of life**. Please migrate to one of the supported
 tag formats that explicitly include both the **image type** and the
-**distribution version** (e.g. `16.10-minimal-trixie`).
+**distribution version** (e.g. `16.10-minimal-bookworm`).
 
 ## Image Catalogs
 
