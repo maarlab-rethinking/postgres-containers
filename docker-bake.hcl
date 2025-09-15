@@ -15,17 +15,6 @@ variable "revision" {
   default = ""
 }
 
-variable "citusVersionMap" {
-  type = map(string)
-  default = {
-    "13" = "11.3"
-    "14" = "12.1"
-    "15" = "13.1"
-    "16" = "13.1"
-    "17" = "13.1"
-  }
-}
-
 fullname = ( environment == "testing") ? "${registry}/postgresql-testing" : "${registry}/postgresql"
 now = timestamp()
 authors = "The CloudNativePG Contributors"
@@ -46,6 +35,16 @@ postgreSQLVersions = [
 postgreSQLPreviewVersions = [
   "18~rc1",
 ]
+
+// Citus version mapping for each PostgreSQL major version
+citusVersionMap = {
+  "13" = "11.3"
+  "14" = "12.1"
+  "15" = "13.2"
+  "16" = "13.2"
+  "17" = "13.2"
+  "18" = "13.2"
+}
 
 // Barman version to build
 # renovate: datasource=github-releases depName=EnterpriseDB/barman versioning=loose
