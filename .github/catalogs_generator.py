@@ -31,7 +31,7 @@ supported_img_types = ["minimal", "standard", "system"]
 supported_os_names = ["bullseye", "bookworm", "trixie"]
 min_supported_major = 13
 
-repo_name = "cloudnative-pg/postgresql"
+repo_name = "maarlab-rethinking/postgresql"
 full_repo_name = f"ghcr.io/{repo_name}"
 pg_regexp = r"(\d+)(?:\.\d+|beta\d+|rc\d+|alpha\d+)-(\d{12})"
 _token_cache = {"value": None, "expires_at": 0}
