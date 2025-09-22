@@ -47,9 +47,10 @@ citusVersionMap = {
 }
 
 // Barman version to build
-# renovate: datasource=github-releases depName=EnterpriseDB/barman versioning=loose
+// renovate: datasource=pypi versioning=loose depName=barman
 barmanVersion = "3.14.0"
 
+// Extensions to be included in the `standard` image
 extensions = [
   "pgaudit",
   "pgvector",
@@ -85,7 +86,7 @@ target "default" {
     "${fullname}:${cleanVersion(pgVersion)}-${tgt}-${distroVersion(base)}",
     "${fullname}:${cleanVersion(pgVersion)}-citus${citusVersionMap[getMajor(pgVersion)]}-${tgt}-${distroVersion(base)}",
     "${fullname}:${cleanVersion(pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${tgt}-${distroVersion(base)}",
-  ], (tgt == "system" && distroVersion(base) == "bullseye" && isPreview(pgVersion) == "false") ? getRollingTags("${fullname}", pgVersion) : [])
+  ], (tgt == "system" && distroVersion(base) == "bullseye" && isPreview(pgVersion) == false) ? getRollingTags("${fullname}", pgVersion) : [])
   context = "."
   target = "${tgt}"
   args = {
@@ -94,6 +95,7 @@ target "default" {
     BASE = "${base}"
     EXTENSIONS = "${getExtensionsString(pgVersion, extensions, citusVersionMap[getMajor(pgVersion)])}"
     PRELOAD_LIBRARIES = "${join(",", extensions)}"
+    STANDARD_ADDITIONAL_POSTGRES_PACKAGES = "${getStandardAdditionalPostgresPackagesPerMajorVersion(getMajor(pgVersion))}"
     BARMAN_VERSION = "${barmanVersion}"
   }
   attest = [
@@ -109,10 +111,10 @@ target "default" {
     "index,manifest:org.opencontainers.image.vendor=${authors}",
     "index,manifest:org.opencontainers.image.title=CloudNativePG PostgreSQL ${pgVersion} ${tgt}",
     "index,manifest:org.opencontainers.image.description=A ${tgt} PostgreSQL ${pgVersion} container image",
-    "index,manifest:org.opencontainers.image.documentation=https://github.com/maarlab-rethinking/postgres-containers",
+    "index,manifest:org.opencontainers.image.documentation=${url}",
     "index,manifest:org.opencontainers.image.authors=${authors}",
     "index,manifest:org.opencontainers.image.licenses=Apache-2.0",
-    "index,manifest:org.opencontainers.image.base.name=docker.io/library/${tag(base)}",
+    "index,manifest:org.opencontainers.image.base.name=docker.io/library/debian:${tag(base)}",
     "index,manifest:org.opencontainers.image.base.digest=${digest(base)}"
   ]
   labels = {
@@ -165,6 +167,17 @@ function getMajor {
 function getExtensionsString {
     params = [ version, extensions, citus_version ]
     result = (isPreview(version) == true) ? "" : replace(join(" ", formatlist("postgresql-%s-%s", getMajor(version), extensions)), "postgresql-${getMajor(version)}-citus", "postgresql-${getMajor(version)}-citus-${citus_version}")
+}
+
+// This function conditionally adds recommended PostgreSQL packages based on
+// the version. For example, starting with version 18, PGDG moved `jit` out of
+// the main package and into a separate one.
+function getStandardAdditionalPostgresPackagesPerMajorVersion {
+    params = [ majorVersion ]
+    // Add PostgreSQL jit package from version 18
+    result = join(" ", [
+      majorVersion < 18 ? "" : format("postgresql-%s-jit", majorVersion)
+    ])
 }
 
 function isMajorPresent {

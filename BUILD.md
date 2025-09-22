@@ -2,7 +2,7 @@
 
 This guide outlines the process for building PostgreSQL operand images for
 CloudNativePG using [Docker Bake](https://docs.docker.com/build/bake/) and a
-[GitHub workflow](.github/workflows/bake.yaml).
+[GitHub workflow](.github/workflows/bake.yml).
 
 The central component of this framework is the
 [Bake file (`docker-bake.hcl`)](docker-bake.hcl).
@@ -116,10 +116,10 @@ you can deploy a temporary, disposable [distribution registry](https://distribut
 with the following command:
 
 ```bash
-docker run -d --rm -p 5000:5000 --name registry registry:2
+docker run -d --rm -p 5000:5000 --name registry registry:3
 ```
 
-This command runs a lightweight, temporary instance of the `registry:2`
+This command runs a lightweight, temporary instance of the `registry:3`
 container on port `5000`.
 
 ## Image Signing Workflow
