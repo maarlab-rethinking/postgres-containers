@@ -183,7 +183,7 @@ tag formats that explicitly include both the **image type** and the
 ## Image Catalogs
 
 CloudNativePG publishes `ClusterImageCatalog` manifests for CloudNativePG in
-the [`artifacts` repository](https://github.com/cloudnative-pg/artifacts/tree/main/image-catalogs),
+the [`artifacts` repository](https://github.com/maarlab-rethinking/artifacts/tree/main/image-catalogs),
 with one catalog available for each supported combination of image type and
 operating system version.
 
