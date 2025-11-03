@@ -143,50 +143,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
-      - name: Log in to the GitHub Container registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Dockle
-        uses: erzz/dockle-action@69369bc745ee29813f730231a821bcd4f71cd290 # v1
-        with:
-          image: ${{ matrix.image }}
-          exit-code: '1'
-          failure-threshold: WARN
-          accept-keywords: key
-          accept-filenames: usr/share/postgresql-common/pgdg/apt.postgresql.org.asc,etc/ssl/private/ssl-cert-snakeoil.key,usr/local/lib/python3.9/dist-packages/azure/core/settings.py,usr/local/lib/python3.11/dist-packages/azure/core/settings.py,usr/local/lib/python3.13/dist-packages/azure/core/settings.py
-
-      - name: Snyk
-        uses: snyk/actions/docker@master
-        id: snyk
-        if: ${{ env.SNYK_TOKEN != '' }}
-        # Snyk can be used to break the build when it detects vulnerabilities.
-        # In this case we want to upload the issues to GitHub Code Scanning.
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Security checks
+        uses: cloudnative-pg/postgres-containers/.github/actions/security-scans@main
         with:
           image: "${{ matrix.image }}"
-          args: --severity-threshold=high --file=Dockerfile
+          registry_user: ${{ github.actor }}
+          registry_token: ${{ secrets.GITHUB_TOKEN }}
+          snyk_token: ${{ secrets.SNYK_TOKEN }}
+          dockerfile: "./Dockerfile"
 
-      - name: Replace sarif security-severity invalid values
-        if: ${{ steps.snyk.conclusion == 'success' }}
-        run: |
-          sed -i 's/"security-severity": "null"/"security-severity": "0"/g' snyk.sarif
-          sed -i 's/"security-severity": "undefined"/"security-severity": "0"/g' snyk.sarif
-
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@f443b600d91635bebf5b0d9ebc620189c0d6fba5 # v4
-        if: ${{ steps.snyk.conclusion == 'success' }}
-        with:
-          sarif_file: snyk.sarif
-
-  # Use the metadata generated in the `testbuild` step to find all the images
-  # that have been built. We copy them one by one to the production registry
-  # using skopeo. Then we sign the production images too.
   copytoproduction:
     name: Copy images to production
     if: |
@@ -199,54 +164,12 @@ jobs:
     permissions:
       contents: read
       packages: write
-      security-events: write
       # Required by the cosign step
       id-token: write
     steps:
-      - name: Log in to the GitHub Container registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+      - name: Copy to production
+        uses: cloudnative-pg/postgres-containers/.github/actions/copy-images@main
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Copy images
-        run: |
-          images=$(echo '${{ needs.testbuild.outputs.metadata }}' |
-            jq -r '
-              .[] as $items |
-              (
-                $items."image.name" |
-                split(",")[] +
-                  "@" +
-                  $items."containerimage.digest"
-              )
-            '
-          )
-          for image in $images
-          do
-            testimageshaonly="${image%:*@*}@${image#*@}"
-            testimagenosha="${image%@*}"
-            prodimage="${testimagenosha/-testing/}"
-            echo "Copying ${testimageshaonly} to ${prodimage}"
-            docker run --quiet quay.io/skopeo/stable:v1.17.0-immutable copy -q -a \
-              --dest-creds ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-              docker://${testimageshaonly} docker://${prodimage}
-          done
-
-      - name: Install cosign
-        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
-
-      - name: Sign images
-        run: |
-          images=$(echo '${{ needs.testbuild.outputs.metadata }}' |
-            jq -r '.[] |
-              (
-                ."image.name" |
-                sub(",.*";"") |
-                sub("-testing:[^@]+";"")
-              ) + "@" + ."containerimage.digest"
-            '
-          )
-          echo "Signing ${images}"
-          cosign sign -t 5m --yes ${images}
+          bake_build_metadata: "${{ needs.testbuild.outputs.metadata }}"
+          registry_user: ${{ github.actor }}
+          registry_token: ${{ secrets.GITHUB_TOKEN }}
