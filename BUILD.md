@@ -54,7 +54,7 @@ The `default` target in Bake represents a Cartesian product of the following
 dimensions:
 
 - **Base Image**
-- **Type** (e.g. `minimal` or `standard`)
+- **Type** (e.g. `minimal`, `standard`, or `extra`)
 - **Platforms**
 - **PostgreSQL Versions**
 
@@ -77,6 +77,12 @@ PostgreSQL 17 with the `minimal` format on the `bookworm` base image:
 
 ```bash
 docker buildx bake --push postgresql-17-minimal-bookworm
+```
+
+To build the extra variant instead, run:
+
+```bash
+docker buildx bake --push postgresql-17-extra-bookworm
 ```
 
 You can also limit the build to a single platform, for example AMD64, with:

@@ -70,10 +70,11 @@ including End-of-Life (EOL) and Long-Term Support (LTS) dates.
 
 ## Image Types
 
-We currently provide and maintain three main types of PostgreSQL images:
+We currently provide and maintain four main types of PostgreSQL images:
 
 * [`minimal`](#minimal-images)
 * [`standard`](#standard-images)
+* [`extra`](#extra-images)
 * [`system`](#system-images) (*deprecated*)
 
 Both `minimal` and `standard` images are designed to work with backup plugins
@@ -120,6 +121,14 @@ Standard images are identifiable by the `standard` tag in their names, such as:
 > the legacy `system` images when used with CloudNativePG. To achieve parity,
 > you must use the [Barman Cloud Plugin](https://github.com/cloudnative-pg/plugin-barman-cloud)
 > as a replacement for the native Barman Cloud support in `system` images.
+
+### Extra Images
+
+Extra images build upon the [`standard`](#standard-images) variant and add:
+
+- PostGIS
+
+These images are identified by the `extra` tag, for example: `17.6-extra-bookworm`.
 
 ### System Images (deprecated)
 

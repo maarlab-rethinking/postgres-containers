@@ -40,6 +40,19 @@ RUN apt-get update && \
 USER 26
 CMD ["postgres", "-c", "shared_preload_libraries=${PRELOAD_LIBRARIES}"]
 
+FROM standard AS extra
+ARG PG_MAJOR
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      "postgresql-${PG_MAJOR}-postgis-3" \
+      "postgresql-${PG_MAJOR}-postgis-3-scripts" && \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
+    rm -rf /var/lib/apt/lists/* /var/cache/* /var/log/*
+
+USER 26
+CMD ["postgres", "-c", "shared_preload_libraries=${PRELOAD_LIBRARIES}"]
+
 FROM standard AS system
 ARG BARMAN_VERSION
 

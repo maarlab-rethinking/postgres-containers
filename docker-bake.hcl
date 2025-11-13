@@ -63,6 +63,7 @@ target "default" {
     tgt = [
       "minimal",
       "standard",
+      "extra",
       "system"
     ]
     // Get the list of PostgreSQL versions, filtering preview versions if already stable
