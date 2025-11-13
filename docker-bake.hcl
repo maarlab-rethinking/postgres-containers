@@ -48,7 +48,7 @@ citusVersionMap = {
 
 // Barman version to build
 // renovate: datasource=pypi versioning=loose depName=barman
-barmanVersion = "3.16.1"
+barmanVersion = "3.16.2"
 
 // Extensions to be included in the `standard` image
 extensions = [
@@ -69,11 +69,11 @@ target "default" {
     pgVersion = getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions)
     base = [
       // renovate: datasource=docker versioning=loose
-      // "debian:trixie-slim@sha256:66b37a5078a77098bfc80175fb5eb881a3196809242fd295b25502854e12cbec", // Still not supported by Citus - commented out
+      // "debian:trixie-slim@sha256:a347fd7510ee31a84387619a492ad6c8eb0af2f2682b916ff3e643eb076f925a", // Still not supported by Citus - commented out
       // renovate: datasource=docker versioning=loose
-      "debian:bookworm-slim@sha256:78d2f66e0fec9e5a39fb2c72ea5e052b548df75602b5215ed01a17171529f706",
+      "debian:bookworm-slim@sha256:936abff852736f951dab72d91a1b6337cf04217b2a77a5eaadc7c0f2f1ec1758",
       // renovate: datasource=docker versioning=loose
-      "debian:bullseye-slim@sha256:52927eff8153b563244f98cdc802ba97918afcdf67f9e4867cbf1f7afb3d147b"
+      "debian:bullseye-slim@sha256:75e0b7a6158b4cc911d4be07d9f6b8a65254eb8c58df14023c3da5c462335593"
     ]
   }
   platforms = [
