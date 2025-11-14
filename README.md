@@ -103,7 +103,6 @@ for example: `17.6-minimal-bookworm`.
 Standard images are an extension of the `minimal` images, enhanced with the
 following additional features:
 
-- Citus
 - PGAudit
 - Postgres Failover Slots
 - pgvector
@@ -126,6 +125,7 @@ Standard images are identifiable by the `standard` tag in their names, such as:
 
 Extra images build upon the [`standard`](#standard-images) variant and add:
 
+- Citus
 - PostGIS
 
 These images are identified by the `extra` tag, for example: `17.6-extra-bookworm`.

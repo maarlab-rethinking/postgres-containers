@@ -23,31 +23,31 @@ USER 26
 
 FROM minimal AS standard
 ARG EXTENSIONS
+ARG STANDARD_ADDITIONAL_POSTGRES_PACKAGES
 ARG PRELOAD_LIBRARIES
 USER root
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl ca-certificates gnupg && \
-    mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://repos.citusdata.com/community/gpgkey | gpg --dearmor -o /etc/apt/keyrings/citusdata-community.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/citusdata-community.gpg] https://repos.citusdata.com/community/debian/ $(. /etc/os-release && echo "$VERSION_CODENAME") main" > /etc/apt/sources.list.d/citus-community.list && \
-    apt-get update && \
     apt-get install -y --no-install-recommends locales-all ${STANDARD_ADDITIONAL_POSTGRES_PACKAGES} ${EXTENSIONS} && \
-    rm /etc/apt/sources.list.d/citus-community.list && \
-    rm -f /etc/apt/keyrings/citusdata-community.gpg && \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false curl gnupg ca-certificates && \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
     rm -rf /var/lib/apt/lists/* /var/cache/* /var/log/*
 
 USER 26
 CMD ["postgres", "-c", "shared_preload_libraries=${PRELOAD_LIBRARIES}"]
 
 FROM standard AS extra
+ARG EXTRA_EXTENSIONS
 ARG PG_MAJOR
 USER root
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      "postgresql-${PG_MAJOR}-postgis-3" \
-      "postgresql-${PG_MAJOR}-postgis-3-scripts" && \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
+    apt-get install -y --no-install-recommends curl ca-certificates gnupg && \
+    mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://repos.citusdata.com/community/gpgkey | gpg --dearmor -o /etc/apt/keyrings/citusdata-community.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/citusdata-community.gpg] https://repos.citusdata.com/community/debian/ $(. /etc/os-release && echo "$VERSION_CODENAME") main" > /etc/apt/sources.list.d/citus-community.list
+RUN apt-get install -y --no-install-recommends ${EXTRA_EXTENSIONS} && \
+    apt-get update && \
+    rm /etc/apt/sources.list.d/citus-community.list && \
+    rm -f /etc/apt/keyrings/citusdata-community.gpg && \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false curl gnupg ca-certificates && \
     rm -rf /var/lib/apt/lists/* /var/cache/* /var/log/*
 
 USER 26
