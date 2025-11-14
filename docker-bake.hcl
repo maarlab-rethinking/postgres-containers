@@ -35,14 +35,24 @@ postgreSQLVersions = [
 postgreSQLPreviewVersions = [
 ]
 
-// Citus version mapping for each PostgreSQL major version
-citusVersionMap = {
-  "13" = "11.3"
-  "14" = "12.1"
-  "15" = "13.2"
-  "16" = "13.2"
-  "17" = "13.2"
-  "18" = "13.2"
+// Extensions version mapping for each PostgreSQL major version
+extensionsVersionMap = {
+  "citus" = {
+    "13" = "11.3"
+    "14" = "12.1"
+    "15" = "13.2"
+    "16" = "13.2"
+    "17" = "13.2"
+    "18" = "13.2"
+  },
+  "postgis" = {
+    "13" = "3"
+    "14" = "3"
+    "15" = "3"
+    "16" = "3"
+    "17" = "3"
+    "18" = "3"
+  }
 }
 
 // Barman version to build
@@ -53,55 +63,137 @@ barmanVersion = "3.16.2"
 extensions = [
   "pgaudit",
   "pgvector",
-  "pg-failover-slots",
-  "citus"
+  "pg-failover-slots"
 ]
 
-target "default" {
-  matrix = {
-    tgt = [
-      "minimal",
-      "standard",
-      "extra",
-      "system"
-    ]
-    // Get the list of PostgreSQL versions, filtering preview versions if already stable
-    pgVersion = getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions)
-    base = [
-      // renovate: datasource=docker versioning=loose
-      // "debian:trixie-slim@sha256:a347fd7510ee31a84387619a492ad6c8eb0af2f2682b916ff3e643eb076f925a", // Still not supported by Citus - commented out
-      // renovate: datasource=docker versioning=loose
-      "debian:bookworm-slim@sha256:936abff852736f951dab72d91a1b6337cf04217b2a77a5eaadc7c0f2f1ec1758",
-      // renovate: datasource=docker versioning=loose
-      "debian:bullseye-slim@sha256:75e0b7a6158b4cc911d4be07d9f6b8a65254eb8c58df14023c3da5c462335593"
-    ]
-  }
-  platforms = [
-    "linux/amd64",
-  ]
+// Extensions to be included in the `extra` image
+extraExtensions = [
+  "citus",
+  "postgis"
+]
+
+// Debian base images
+trixieImage = "debian:trixie-slim@sha256:a347fd7510ee31a84387619a492ad6c8eb0af2f2682b916ff3e643eb076f925a"
+bookwormImage = "debian:bookworm-slim@sha256:936abff852736f951dab72d91a1b6337cf04217b2a77a5eaadc7c0f2f1ec1758"
+bullseyeImage = "debian:bullseye-slim@sha256:75e0b7a6158b4cc911d4be07d9f6b8a65254eb8c58df14023c3da5c462335593"
+
+group "default" {
+  targets = ["standard-targets", "extra-targets"]
+}
+
+target "_common" {
+  platforms = ["linux/amd64"]
   dockerfile = "Dockerfile"
-  name = "postgresql-${index(split(".",cleanVersion(pgVersion)),0)}-${tgt}-${distroVersion(base)}"
-  tags = concat([
-    "${fullname}:${index(split(".",cleanVersion(pgVersion)),0)}-${tgt}-${distroVersion(base)}",
-    "${fullname}:${cleanVersion(pgVersion)}-${tgt}-${distroVersion(base)}",
-    "${fullname}:${cleanVersion(pgVersion)}-citus${citusVersionMap[getMajor(pgVersion)]}-${tgt}-${distroVersion(base)}",
-    "${fullname}:${cleanVersion(pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${tgt}-${distroVersion(base)}",
-  ], (tgt == "system" && distroVersion(base) == "bullseye" && isPreview(pgVersion) == false) ? getRollingTags("${fullname}", pgVersion) : [])
   context = "."
-  target = "${tgt}"
-  args = {
-    PG_VERSION = "${pgVersion}"
-    PG_MAJOR = "${getMajor(pgVersion)}"
-    BASE = "${base}"
-    EXTENSIONS = "${getExtensionsString(pgVersion, extensions, citusVersionMap[getMajor(pgVersion)])}"
-    PRELOAD_LIBRARIES = "${join(",", extensions)}"
-    STANDARD_ADDITIONAL_POSTGRES_PACKAGES = "${getStandardAdditionalPostgresPackagesPerMajorVersion(getMajor(pgVersion))}"
-    BARMAN_VERSION = "${barmanVersion}"
-  }
   attest = [
     "type=provenance,mode=max",
     "type=sbom"
   ]
+}
+
+target "standard-targets" {
+  inherits = ["_common"]
+  matrix = {
+    tgt = ["minimal", "standard", "system"]
+    pgVersion = getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions)
+    base = [
+      // renovate: datasource=docker versioning=loose
+      trixieImage,
+      // renovate: datasource=docker versioning=loose
+      bookwormImage,
+      // renovate: datasource=docker versioning=loose
+      bullseyeImage
+    ]
+  }
+  name = "postgresql-${index(split(".",cleanVersion(pgVersion)),0)}-${tgt}-${distroVersion(base)}"
+  target = "${tgt}"
+  tags = concat(
+    [
+      "${fullname}:${index(split(".",cleanVersion(pgVersion)),0)}-${tgt}-${distroVersion(base)}",
+      "${fullname}:${cleanVersion(pgVersion)}-${tgt}-${distroVersion(base)}",
+      "${fullname}:${cleanVersion(pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${tgt}-${distroVersion(base)}",
+    ],
+    (tgt == "system" && distroVersion(base) == "bullseye" && isPreview(pgVersion) == false) ? getRollingTags("${fullname}", pgVersion) : []
+  )
+  args = {
+    PG_VERSION = "${pgVersion}"
+    PG_MAJOR = "${getMajor(pgVersion)}"
+    BASE = "${base}"
+    EXTENSIONS = "${getExtensionsString(pgVersion, extensions)}"
+    PRELOAD_LIBRARIES = "${join(",", extensions)}"
+    STANDARD_ADDITIONAL_POSTGRES_PACKAGES = "${getStandardAdditionalPostgresPackagesPerMajorVersion(getMajor(pgVersion))}"
+    BARMAN_VERSION = "${barmanVersion}"
+  }
+  annotations = [
+    "index,manifest:org.opencontainers.image.created=${now}",
+    "index,manifest:org.opencontainers.image.url=${url}",
+    "index,manifest:org.opencontainers.image.source=${url}",
+    "index,manifest:org.opencontainers.image.version=${pgVersion}",
+    "index,manifest:org.opencontainers.image.revision=${revision}",
+    "index,manifest:org.opencontainers.image.vendor=${authors}",
+    "index,manifest:org.opencontainers.image.title=CloudNativePG PostgreSQL ${pgVersion} ${tgt}",
+    "index,manifest:org.opencontainers.image.description=A ${tgt} PostgreSQL ${pgVersion} container image",
+    "index,manifest:org.opencontainers.image.documentation=${url}",
+    "index,manifest:org.opencontainers.image.authors=${authors}",
+    "index,manifest:org.opencontainers.image.licenses=Apache-2.0",
+    "index,manifest:org.opencontainers.image.base.name=docker.io/library/debian:${tag(base)}",
+    "index,manifest:org.opencontainers.image.base.digest=${digest(base)}"
+  ]
+  labels = {
+    "org.opencontainers.image.created" = "${now}",
+    "org.opencontainers.image.url" = "${url}",
+    "org.opencontainers.image.source" = "${url}",
+    "org.opencontainers.image.version" = "${pgVersion}",
+    "org.opencontainers.image.revision" = "${revision}",
+    "org.opencontainers.image.vendor" = "${authors}",
+    "org.opencontainers.image.title" = "CloudNativePG PostgreSQL ${pgVersion} ${tgt}",
+    "org.opencontainers.image.description" = "A ${tgt} PostgreSQL ${pgVersion} container image",
+    "org.opencontainers.image.documentation" = "${url}",
+    "org.opencontainers.image.authors" = "${authors}",
+    "org.opencontainers.image.licenses" = "Apache-2.0"
+    "org.opencontainers.image.base.name" = "docker.io/library/debian:${tag(base)}"
+    "org.opencontainers.image.base.digest" = "${digest(base)}"
+  }
+}
+
+target "extra-targets" {
+  inherits = ["_common"]
+  matrix = {
+    tgt = ["extra"]
+    pgVersion = getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions)
+    // Exclude trixie-slim for extra target (Citus doesn't support it yet)
+    base = [
+      // renovate: datasource=docker versioning=loose
+      bookwormImage,
+      // renovate: datasource=docker versioning=loose
+      bullseyeImage
+    ]
+  }
+  name = "postgresql-${index(split(".",cleanVersion(pgVersion)),0)}-${tgt}-${distroVersion(base)}"
+  target = "${tgt}"
+  tags = concat(
+    [
+      "${fullname}:${index(split(".",cleanVersion(pgVersion)),0)}-${tgt}-${distroVersion(base)}",
+      "${fullname}:${cleanVersion(pgVersion)}-${tgt}-${distroVersion(base)}",
+      "${fullname}:${cleanVersion(pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${tgt}-${distroVersion(base)}",
+    ],
+    [
+      for ext in extraExtensions : "${fullname}:${cleanVersion(pgVersion)}-${getExtensionTag(ext, getMajor(pgVersion))}-${tgt}-${distroVersion(base)}"
+    ],
+    [
+      "${fullname}:${cleanVersion(pgVersion)}-${getCombinedExtensionsTag(extraExtensions, getMajor(pgVersion))}-${tgt}-${distroVersion(base)}"
+    ]
+  )
+  args = {
+    PG_VERSION = "${pgVersion}"
+    PG_MAJOR = "${getMajor(pgVersion)}"
+    BASE = "${base}"
+    EXTENSIONS = "${getExtensionsString(pgVersion, extensions)}"
+    EXTRA_EXTENSIONS = "${getExtensionsString(pgVersion, extraExtensions)}"
+    PRELOAD_LIBRARIES = "${join(",", concat(extensions, extraExtensions))}"
+    STANDARD_ADDITIONAL_POSTGRES_PACKAGES = "${getStandardAdditionalPostgresPackagesPerMajorVersion(getMajor(pgVersion))}"
+    BARMAN_VERSION = "${barmanVersion}"
+  }
   annotations = [
     "index,manifest:org.opencontainers.image.created=${now}",
     "index,manifest:org.opencontainers.image.url=${url}",
@@ -165,8 +257,10 @@ function getMajor {
 }
 
 function getExtensionsString {
-    params = [ version, extensions, citus_version ]
-    result = (isPreview(version) == true) ? "" : replace(join(" ", formatlist("postgresql-%s-%s", getMajor(version), extensions)), "postgresql-${getMajor(version)}-citus", "postgresql-${getMajor(version)}-citus-${citus_version}")
+    params = [ version, extensions ]
+    result = isPreview(version) ? "" : join(" ", [
+      for ext in extensions : format("postgresql-%s-%s%s", getMajor(version), ext, try("-${extensionsVersionMap[ext][getMajor(version)]}", ""))
+    ])
 }
 
 // This function conditionally adds recommended PostgreSQL packages based on
@@ -202,4 +296,14 @@ function getRollingTags {
       format("%s:%s", imageName, pgVersion),
       format("%s:%s", imageName, getMajor(pgVersion))
     ]
+}
+
+function getExtensionTag {
+    params = [ extension, majorVersion ]
+    result = format("%s%s", extension, extensionsVersionMap[extension][majorVersion])
+}
+
+function getCombinedExtensionsTag {
+    params = [ extensions, majorVersion ]
+    result = join("-", [for ext in extensions : getExtensionTag(ext, majorVersion)])
 }
