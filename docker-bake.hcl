@@ -160,7 +160,11 @@ target "extra-targets" {
   inherits = ["_common"]
   matrix = {
     tgt = ["extra"]
-    pgVersion = getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions)
+    // Exclude PostgreSQL 18 for extra target (some extensions not yet available)
+    pgVersion = [
+      for v in getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions) : v
+      if getMajor(v) < "18"
+    ]
     // Exclude trixie-slim for extra target (Citus doesn't support it yet)
     base = [
       // renovate: datasource=docker versioning=loose
