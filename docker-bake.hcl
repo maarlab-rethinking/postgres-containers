@@ -82,7 +82,10 @@ group "default" {
 }
 
 target "_common" {
-  platforms = ["linux/amd64"]
+  platforms = [
+    "linux/amd64",
+    "linux/arm64"
+  ]
   dockerfile = "Dockerfile"
   context = "."
   attest = [
@@ -158,6 +161,8 @@ target "standard-targets" {
 
 target "extra-targets" {
   inherits = ["_common"]
+  // Override platforms: exclude arm64 for extra target (Citus build issues on arm64)
+  platforms = ["linux/amd64"]
   matrix = {
     tgt = ["extra"]
     // Exclude PostgreSQL 18 for extra target (some extensions not yet available)
