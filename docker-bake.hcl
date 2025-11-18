@@ -73,9 +73,12 @@ extraExtensions = [
 ]
 
 // Debian base images
-trixieImage = "debian:trixie-slim@sha256:a347fd7510ee31a84387619a492ad6c8eb0af2f2682b916ff3e643eb076f925a"
-bookwormImage = "debian:bookworm-slim@sha256:936abff852736f951dab72d91a1b6337cf04217b2a77a5eaadc7c0f2f1ec1758"
-bullseyeImage = "debian:bullseye-slim@sha256:75e0b7a6158b4cc911d4be07d9f6b8a65254eb8c58df14023c3da5c462335593"
+// renovate: datasource=docker versioning=loose
+trixieImage = "debian:trixie-slim@sha256:c0accef689e4f11b5efd1b6852e23f30c7495f2a9b1e6b1007299baab2ff4934"
+// renovate: datasource=docker versioning=loose
+bookwormImage = "debian:bookworm-slim@sha256:b4aa902587c2e61ce789849cb54c332b0400fe27b1ee33af4669e1f7e7c3e22f"
+// renovate: datasource=docker versioning=loose
+bullseyeImage = "debian:bullseye-slim@sha256:530a3348fc4b5734ffe1a137ddbcee6850154285251b53c3425c386ea8fac77b"
 
 group "default" {
   targets = ["standard-targets", "extra-targets"]
@@ -100,11 +103,8 @@ target "standard-targets" {
     tgt = ["minimal", "standard", "system"]
     pgVersion = getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions)
     base = [
-      // renovate: datasource=docker versioning=loose
       trixieImage,
-      // renovate: datasource=docker versioning=loose
       bookwormImage,
-      // renovate: datasource=docker versioning=loose
       bullseyeImage
     ]
   }
@@ -172,9 +172,7 @@ target "extra-targets" {
     ]
     // Exclude trixie-slim for extra target (Citus doesn't support it yet)
     base = [
-      // renovate: datasource=docker versioning=loose
       bookwormImage,
-      // renovate: datasource=docker versioning=loose
       bullseyeImage
     ]
   }
