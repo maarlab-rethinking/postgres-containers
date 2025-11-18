@@ -73,11 +73,11 @@ extraExtensions = [
 ]
 
 // Debian base images
-// renovate: datasource=docker versioning=loose
+// renovate: datasource=docker versioning=loose depName=debian
 trixieImage = "debian:trixie-slim@sha256:c0accef689e4f11b5efd1b6852e23f30c7495f2a9b1e6b1007299baab2ff4934"
-// renovate: datasource=docker versioning=loose
+// renovate: datasource=docker versioning=loose depName=debian
 bookwormImage = "debian:bookworm-slim@sha256:b4aa902587c2e61ce789849cb54c332b0400fe27b1ee33af4669e1f7e7c3e22f"
-// renovate: datasource=docker versioning=loose
+// renovate: datasource=docker versioning=loose depName=debian
 bullseyeImage = "debian:bullseye-slim@sha256:530a3348fc4b5734ffe1a137ddbcee6850154285251b53c3425c386ea8fac77b"
 
 group "default" {
