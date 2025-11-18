@@ -6,19 +6,19 @@ metadata:
     images.cnpg.io/family: postgresql
     images.cnpg.io/type: system
     images.cnpg.io/os: bookworm
-    images.cnpg.io/date: '20251117'
+    images.cnpg.io/date: '20251118'
     images.cnpg.io/publisher: cnpg.io
 spec:
   images:
     - major: 13
       image: ghcr.io/maarlab-rethinking/postgresql:13.22-202511030826-system-bookworm@sha256:4dd3e6d6cc5a8ccb42df25c26aa58173e338eea165364a0230e26e315f6b50f4
     - major: 14
-      image: ghcr.io/maarlab-rethinking/postgresql:14.20-202511170827-system-bookworm@sha256:9e7944eda93cbd64e487f657aa182f26e02d3661f2ea7fca84a9b20ab5f3601d
+      image: ghcr.io/maarlab-rethinking/postgresql:14.20-202511181128-system-bookworm@sha256:5885d35f7793bf65d6d86dc7f794e9b97cae92e0a2ea6a3d703950a892346e1c
     - major: 15
-      image: ghcr.io/maarlab-rethinking/postgresql:15.15-202511170827-system-bookworm@sha256:7abbc6fd4c4b064ad0c62d411e8c3f9dc87fb1aa6d8df14d7bb06c8690167c4a
+      image: ghcr.io/maarlab-rethinking/postgresql:15.15-202511181129-system-bookworm@sha256:c96bece28dcdbf9f30a318d30f4f10ef4e180f2fae5c0041dc38e55c0bd49e9b
     - major: 16
-      image: ghcr.io/maarlab-rethinking/postgresql:16.11-202511170827-system-bookworm@sha256:c99788fc5bc7c18040759579949d6ddfdcfeeceab88a5929498e71b82c6ff370
+      image: ghcr.io/maarlab-rethinking/postgresql:16.11-202511181128-system-bookworm@sha256:8c2c29afe482fb0a6be31b97ab4c2d2cc99a8b8ae193f0bdfd880ce452275700
     - major: 17
-      image: ghcr.io/maarlab-rethinking/postgresql:17.7-202511170826-system-bookworm@sha256:9a35f93e9ccc71efaa308cfee8c7ea241789fbe1d29b627c90215f8a8987eb64
+      image: ghcr.io/maarlab-rethinking/postgresql:17.7-202511181128-system-bookworm@sha256:fc8755efb1372a01a04a98f076ce672ff871a074fe023caf5af5b410b69b196a
     - major: 18
-      image: ghcr.io/maarlab-rethinking/postgresql:18.1-202511170827-system-bookworm@sha256:d77fbc4e67d6bb3a631a31bb4ead5214f5332902a3489628d1fdbba62e278387
+      image: ghcr.io/maarlab-rethinking/postgresql:18.1-202511181128-system-bookworm@sha256:7c90ccbb0638bf14d711df702a160837f7e9a97875afdc6a469db821d80c7741
