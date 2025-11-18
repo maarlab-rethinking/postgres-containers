@@ -41,12 +41,13 @@ USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl ca-certificates gnupg && \
     mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://repos.citusdata.com/community/gpgkey | gpg --dearmor -o /etc/apt/keyrings/citusdata-community.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/citusdata-community.gpg] https://repos.citusdata.com/community/debian/ $(. /etc/os-release && echo "$VERSION_CODENAME") main" > /etc/apt/sources.list.d/citus-community.list && \
+    curl -fsSL https://repo.pigsty.io/key | gpg --dearmor -o /etc/apt/keyrings/pigsty.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/infra generic main" > /etc/apt/sources.list.d/pigsty-io.list && \
+    echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/$(. /etc/os-release && echo "$VERSION_CODENAME") $(. /etc/os-release && echo "$VERSION_CODENAME") main" >> /etc/apt/sources.list.d/pigsty-io.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends ${EXTRA_EXTENSIONS} && \
-    rm /etc/apt/sources.list.d/citus-community.list && \
-    rm -f /etc/apt/keyrings/citusdata-community.gpg && \
+    rm /etc/apt/sources.list.d/pigsty-io.list && \
+    rm -f /etc/apt/keyrings/pigsty.gpg && \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false curl gnupg ca-certificates && \
     rm -rf /var/lib/apt/lists/* /var/cache/* /var/log/*
 
