@@ -57,7 +57,7 @@ extensionsVersionMap = {
 
 // Barman version to build
 // renovate: datasource=pypi versioning=loose depName=barman
-barmanVersion = "3.16.2"
+barmanVersion = "3.17.0"
 
 // Extensions to be included in the `standard` image
 extensions = [
@@ -74,11 +74,11 @@ extraExtensions = [
 
 // Debian base images
 // renovate: datasource=docker versioning=loose depName=debian
-trixieImage = "debian:trixie-slim@sha256:e711a7b30ec1261130d0a121050b4ed81d7fb28aeabcf4ea0c7876d4e9f5aca2"
+trixieImage = "debian:trixie-slim@sha256:77ba0164de17b88dd0bf6cdc8f65569e6e5fa6cd256562998b62553134a00ef0"
 // renovate: datasource=docker versioning=loose depName=debian
-bookwormImage = "debian:bookworm-slim@sha256:e899040a73d36e2b36fa33216943539d9957cba8172b858097c2cabcdb20a3e2"
+bookwormImage = "debian:bookworm-slim@sha256:56ff6d36d4eb3db13a741b342ec466f121480b5edded42e4b7ee850ce7a418ee"
 // renovate: datasource=docker versioning=loose depName=debian
-bullseyeImage = "debian:bullseye-slim@sha256:5fc1d68d490d6e22a8b182f67d2b9ed800e6dd49e997dd595a46977fe7cece46"
+bullseyeImage = "debian:bullseye-slim@sha256:b32674fb57780ad57d7b0749242d3f585f462f4ec4a60ae0adacd945f9cb9734"
 
 group "default" {
   targets = ["standard-targets", "extra-targets"]
