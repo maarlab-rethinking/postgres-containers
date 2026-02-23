@@ -22,7 +22,7 @@ runs:
   using: composite
   steps:
     - name: Log in to the GitHub Container registry
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+      uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
       with:
         registry: ghcr.io
         username: ${{ inputs.registry_user }}
@@ -51,14 +51,37 @@ runs:
         args: --severity-threshold=high --file=${{ inputs.dockerfile }}
 
     - name: Replace sarif security-severity invalid values
-      if: ${{ steps.snyk.conclusion == 'success' }}
+      if: ${{ hashFiles('snyk.sarif') != '' }}
       shell: bash
       run: |
         sed -i 's/"security-severity": "null"/"security-severity": "0"/g' snyk.sarif
         sed -i 's/"security-severity": "undefined"/"security-severity": "0"/g' snyk.sarif
 
     - name: Upload result to GitHub Code Scanning
-      uses: github/codeql-action/upload-sarif@cdefb33c0f6224e58673d9004f47f7cb3e328b89 # v4
-      if: ${{ steps.snyk.conclusion == 'success' }}
+      uses: github/codeql-action/upload-sarif@9e907b5e64f6b83e7804b09294d44122997950d6 # v4
+      if: ${{ hashFiles('snyk.sarif') != '' }}
       with:
         sarif_file: snyk.sarif
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@c1824fd6edce30d7ab345a9989de00bbd46ef284 # 0.34.0
+      id: trivy
+      continue-on-error: true
+      with:
+        version: 'latest'
+        image-ref: '${{ inputs.image }}'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@9e907b5e64f6b83e7804b09294d44122997950d6 # v4
+      if: ${{ hashFiles('trivy-results.sarif') != '' }}
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+    - name: Review Security checks
+      if: ${{ hashFiles('snyk.sarif') == '' && hashFiles('trivy-results.sarif') == '' }}
+      shell: bash
+      run: |
+        echo "None of the security checks produced results (Snyk and Trivy)"
+        exit 1
