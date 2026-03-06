@@ -165,13 +165,9 @@ target "extra-targets" {
   platforms = ["linux/amd64"]
   matrix = {
     tgt = ["extra"]
-    // Exclude PostgreSQL 18 for extra target (some extensions not yet available)
-    pgVersion = [
-      for v in getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions) : v
-      if getMajor(v) < "18"
-    ]
-    // Exclude trixie-slim for extra target (Citus doesn't support it yet)
+    pgVersion = getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions)
     base = [
+      trixieImage,
       bookwormImage,
       bullseyeImage
     ]
