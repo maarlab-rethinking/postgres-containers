@@ -72,6 +72,14 @@ extraExtensions = [
   "postgis"
 ]
 
+// Minimum PostgreSQL major version required for each extra extension on
+// specific distros. Extensions or distros not listed are unconstrained.
+extensionDistroConstraints = {
+  "citus" = {
+    "trixie" = 16
+  }
+}
+
 // Debian base images
 // renovate: datasource=docker versioning=loose depName=debian
 trixieImage = "debian:trixie-slim@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430"
@@ -181,10 +189,10 @@ target "extra-targets" {
       "${fullname}:${cleanVersion(pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${tgt}-${distroVersion(base)}",
     ],
     [
-      for ext in extraExtensions : "${fullname}:${cleanVersion(pgVersion)}-${getExtensionTag(ext, getMajor(pgVersion))}-${tgt}-${distroVersion(base)}"
+      for ext in getExtraExtensionsForDistro(pgVersion, base, extraExtensions) : "${fullname}:${cleanVersion(pgVersion)}-${getExtensionTag(ext, getMajor(pgVersion))}-${tgt}-${distroVersion(base)}"
     ],
     [
-      "${fullname}:${cleanVersion(pgVersion)}-${getCombinedExtensionsTag(extraExtensions, getMajor(pgVersion))}-${tgt}-${distroVersion(base)}"
+      "${fullname}:${cleanVersion(pgVersion)}-${getCombinedExtensionsTag(getExtraExtensionsForDistro(pgVersion, base, extraExtensions), getMajor(pgVersion))}-${tgt}-${distroVersion(base)}"
     ]
   )
   args = {
@@ -192,8 +200,8 @@ target "extra-targets" {
     PG_MAJOR = "${getMajor(pgVersion)}"
     BASE = "${base}"
     EXTENSIONS = "${getExtensionsString(pgVersion, extensions)}"
-    EXTRA_EXTENSIONS = "${getExtensionsString(pgVersion, extraExtensions)}"
-    PRELOAD_LIBRARIES = "${join(",", concat(extensions, extraExtensions))}"
+    EXTRA_EXTENSIONS = "${getExtensionsString(pgVersion, getExtraExtensionsForDistro(pgVersion, base, extraExtensions))}"
+    PRELOAD_LIBRARIES = "${join(",", concat(extensions, getExtraExtensionsForDistro(pgVersion, base, extraExtensions)))}"
     STANDARD_ADDITIONAL_POSTGRES_PACKAGES = "${getStandardAdditionalPostgresPackagesPerMajorVersion(getMajor(pgVersion))}"
     BARMAN_VERSION = "${barmanVersion}"
   }
@@ -291,6 +299,18 @@ function getPgVersions {
       if !isMajorPresent(getMajor(v), stableVersions)
     ]
   )
+}
+
+function getExtraExtensionsForDistro {
+    params = [pgVersion, base, extraExts]
+    result = [
+      for ext in extraExts : ext
+      if !(
+        contains(keys(extensionDistroConstraints), ext) &&
+        contains(keys(extensionDistroConstraints[ext]), distroVersion(base)) &&
+        getMajor(pgVersion) < extensionDistroConstraints[ext][distroVersion(base)]
+      )
+    ]
 }
 
 function getRollingTags {
