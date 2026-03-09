@@ -6,19 +6,19 @@ metadata:
     images.cnpg.io/family: postgresql
     images.cnpg.io/type: system
     images.cnpg.io/os: bullseye
-    images.cnpg.io/date: '20260302'
+    images.cnpg.io/date: '20260309'
     images.cnpg.io/publisher: cnpg.io
 spec:
   images:
     - major: 13
       image: ghcr.io/maarlab-rethinking/postgresql:13.22-202511030826-system-bullseye@sha256:97c831246cc9588c0a1298be58c32ed4970acd4cf5d21a9869b7083033cea026
     - major: 14
-      image: ghcr.io/maarlab-rethinking/postgresql:14.22-202603020841-system-bullseye@sha256:f1f2afff30d05bf966ed16b2de268a0413c9d8fd25b54077847a736dc500e543
+      image: ghcr.io/maarlab-rethinking/postgresql:14.22-202603091530-system-bullseye@sha256:48604c13917e843995f25f6d02854c1c3572f3a2833d66356b0d844ac9574d86
     - major: 15
-      image: ghcr.io/maarlab-rethinking/postgresql:15.17-202603020841-system-bullseye@sha256:f96747bfe185e85e5c5fe0e00837054949efde12c2a741263f7913503161e094
+      image: ghcr.io/maarlab-rethinking/postgresql:15.17-202603091530-system-bullseye@sha256:66098b29fe7d228554cc85238576e5fc0c69c7a8e6331693f08c1513074fea25
     - major: 16
-      image: ghcr.io/maarlab-rethinking/postgresql:16.13-202603020841-system-bullseye@sha256:7f1e0ee49b08ce2621f36954a61c5451c1c37eca4fecc20542a7c056821a074c
+      image: ghcr.io/maarlab-rethinking/postgresql:16.13-202603091530-system-bullseye@sha256:32beb111d98c93f5279f5c3bc4ffbd08ebf6fa905469cabac1f720a6e26be67e
     - major: 17
-      image: ghcr.io/maarlab-rethinking/postgresql:17.9-202603020841-system-bullseye@sha256:4e57b45b2a1b02a39b13030443d0a73256f501f9b79a2c1d8e980ec6ad5bf8ce
+      image: ghcr.io/maarlab-rethinking/postgresql:17.9-202603091735-system-bullseye@sha256:deea6c41363d50e96d30a80d868d247a0835ff06c228f6b66574b5afcfe0514f
     - major: 18
-      image: ghcr.io/maarlab-rethinking/postgresql:18.3-202603020841-system-bullseye@sha256:1dc7810667491d126fe8c293129fa915183574b82b1dcbf630c3a9ef4ec66564
+      image: ghcr.io/maarlab-rethinking/postgresql:18.3-202603091530-system-bullseye@sha256:6ca3a41b71631456ef444beba7622f918a50962bb03b11e09d42e232797efb30
