@@ -128,6 +128,16 @@ Extra images build upon the [`standard`](#standard-images) variant and add:
 
 These images are identified by the `extra` tag, for example: `17.6-extra-trixie`.
 
+> [!NOTE]
+> Not all extra extensions are available on every combination of Debian release
+> and PostgreSQL version. The following exceptions apply:
+>
+> - **Citus** is not available on Debian `trixie` for PostgreSQL 14 and 15.
+> - **PostGIS** is not available on Debian `bullseye` for PostgreSQL 18.
+>
+> In these cases, the `extra` image is still built but only includes the
+> supported extensions for that combination.
+
 ### System Images (deprecated)
 
 Starting from September 2025, system images are based on the `standard` image

@@ -72,11 +72,15 @@ extraExtensions = [
   "postgis"
 ]
 
-// Minimum PostgreSQL major version required for each extra extension on
-// specific distros. Extensions or distros not listed are unconstrained.
+// Supported PostgreSQL major version range for each extra extension on
+// specific distros. Use `min` and/or `max` to define bounds.
+// Extensions or distros not listed are unconstrained.
 extensionDistroConstraints = {
   "citus" = {
-    "trixie" = 16
+    "trixie" = { min = 16 }
+  }
+  "postgis" = {
+    "bullseye" = { max = 17 }
   }
 }
 
@@ -308,7 +312,10 @@ function getExtraExtensionsForDistro {
       if !(
         contains(keys(extensionDistroConstraints), ext) &&
         contains(keys(extensionDistroConstraints[ext]), distroVersion(base)) &&
-        getMajor(pgVersion) < extensionDistroConstraints[ext][distroVersion(base)]
+        (
+          try(getMajor(pgVersion) < extensionDistroConstraints[ext][distroVersion(base)].min, false) ||
+          try(getMajor(pgVersion) > extensionDistroConstraints[ext][distroVersion(base)].max, false)
+        )
       )
     ]
 }
