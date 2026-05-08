@@ -52,7 +52,7 @@ jobs:
           yq -i '.metadata.name = "postgresql"' postgres-containers/Debian/ClusterImageCatalog-bookworm.yaml
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
+        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
 
       - name: Sign catalogs
         run: |
@@ -74,7 +74,7 @@ jobs:
           git status
           git diff --staged
 
-      - uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
+      - uses: EndBug/add-and-commit@290ea2c423ad77ca9c62ae0f5b224379612c0321 # v10
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           cwd: 'artifacts'
@@ -102,7 +102,7 @@ jobs:
           git diff --staged
 
       # TODO: remove this step once system images are EOL
-      - uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
+      - uses: EndBug/add-and-commit@290ea2c423ad77ca9c62ae0f5b224379612c0321 # v10
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           cwd: 'postgres-containers'

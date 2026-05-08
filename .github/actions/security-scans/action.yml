@@ -22,14 +22,14 @@ runs:
   using: composite
   steps:
     - name: Log in to the GitHub Container registry
-      uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4
+      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4
       with:
         registry: ghcr.io
         username: ${{ inputs.registry_user }}
         password: ${{ inputs.registry_token }}
 
     - name: Dockle
-      uses: erzz/dockle-action@69369bc745ee29813f730231a821bcd4f71cd290 # v1
+      uses: erzz/dockle-action@e8a7c41f36f1236ca3282b298d425ffbfdb2e922 # v1
       with:
         image: "${{ inputs.image }}"
         exit-code: '1'
@@ -58,7 +58,7 @@ runs:
         sed -i 's/"security-severity": "undefined"/"security-severity": "0"/g' snyk.sarif
 
     - name: Upload result to GitHub Code Scanning
-      uses: github/codeql-action/upload-sarif@0d579ffd059c29b07949a3cce3983f0780820c98 # v4
+      uses: github/codeql-action/upload-sarif@e46ed2cbd01164d986452f91f178727624ae40d7 # v4
       if: ${{ hashFiles('snyk.sarif') != '' }}
       with:
         sarif_file: snyk.sarif
