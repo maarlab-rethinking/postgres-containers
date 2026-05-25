@@ -6,19 +6,19 @@ metadata:
     images.cnpg.io/family: postgresql
     images.cnpg.io/type: system
     images.cnpg.io/os: bullseye
-    images.cnpg.io/date: '20260518'
+    images.cnpg.io/date: '20260525'
     images.cnpg.io/publisher: cnpg.io
 spec:
   images:
     - major: 13
       image: ghcr.io/maarlab-rethinking/postgresql:13.22-202511030826-system-bullseye@sha256:97c831246cc9588c0a1298be58c32ed4970acd4cf5d21a9869b7083033cea026
     - major: 14
-      image: ghcr.io/maarlab-rethinking/postgresql:14.23-202605181142-system-bullseye@sha256:e436c20492adb9c62ebcec0ad2d0cd6bf37a14c61d22801be6bbdbef23c1f3fa
+      image: ghcr.io/maarlab-rethinking/postgresql:14.23-202605251151-system-bullseye@sha256:28e34839d4ba9c77013b4f70daa44f31bd8f6f9f9138584d5c4d71ce01f79cf5
     - major: 15
-      image: ghcr.io/maarlab-rethinking/postgresql:15.18-202605181142-system-bullseye@sha256:c841aa6fbea83a60d7b015813467838ca38cb2ca34a76a74429eeaa6f3ce1350
+      image: ghcr.io/maarlab-rethinking/postgresql:15.18-202605251151-system-bullseye@sha256:7d1e3aa9db961c658a269df17715d82ada543522dc099a682848ef0fb35a2ab6
     - major: 16
-      image: ghcr.io/maarlab-rethinking/postgresql:16.14-202605181142-system-bullseye@sha256:e95a1c72d278c3d2aeed6db974ae71647baa17f0843ab9dccc93f24ab643986c
+      image: ghcr.io/maarlab-rethinking/postgresql:16.14-202605251151-system-bullseye@sha256:fc7888c1e0e3a75f5b24718399804cf32121d9a7c1e1ecce4d9f8c679a01fd1d
     - major: 17
-      image: ghcr.io/maarlab-rethinking/postgresql:17.10-202605182130-system-bullseye@sha256:23b2d4078b229de802ee9d3f060935d1aaf782e600a3dc1592e52f0cd255bd69
+      image: ghcr.io/maarlab-rethinking/postgresql:17.10-202605251151-system-bullseye@sha256:141024887ebedc8bc38752e954b8bf53adc4b4f1f7bc27e253424cde803ea8ca
     - major: 18
-      image: ghcr.io/maarlab-rethinking/postgresql:18.4-202605181142-system-bullseye@sha256:5e014dd823f7ba8ae2a5cf404f94f47462dc14889d69350edb1fac68cb3d8d3b
+      image: ghcr.io/maarlab-rethinking/postgresql:18.4-202605251151-system-bullseye@sha256:2b1fa11284bd4a5a583b75a942b93af90f10fe7eca39747f26fdeb8b804cf6a3
