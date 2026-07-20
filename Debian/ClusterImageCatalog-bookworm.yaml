@@ -6,19 +6,19 @@ metadata:
     images.cnpg.io/family: postgresql
     images.cnpg.io/type: system
     images.cnpg.io/os: bookworm
-    images.cnpg.io/date: '20260713'
+    images.cnpg.io/date: '20260720'
     images.cnpg.io/publisher: cnpg.io
 spec:
   images:
     - major: 13
       image: ghcr.io/maarlab-rethinking/postgresql:13.22-202511030826-system-bookworm@sha256:4dd3e6d6cc5a8ccb42df25c26aa58173e338eea165364a0230e26e315f6b50f4
     - major: 14
-      image: ghcr.io/maarlab-rethinking/postgresql:14.23-202607131058-system-bookworm@sha256:1ec772b6a6d6334d68b5d0257d452783931638442dd1945809cbc0cb3db73a89
+      image: ghcr.io/maarlab-rethinking/postgresql:14.23-202607201049-system-bookworm@sha256:4228216086704997f5ad66ffc7a2a0e81165fab7ed7950949056f5b03f35d0dd
     - major: 15
-      image: ghcr.io/maarlab-rethinking/postgresql:15.18-202607131058-system-bookworm@sha256:edcc2c3f24f31e8908a9d39a2acee85ba50411f91b55336acbadee593f59428e
+      image: ghcr.io/maarlab-rethinking/postgresql:15.18-202607201049-system-bookworm@sha256:ad8635c6a48ae9d817eb6bb7076688ca4e672ff5bbf12ce272511de3c9964fc0
     - major: 16
-      image: ghcr.io/maarlab-rethinking/postgresql:16.14-202607131058-system-bookworm@sha256:d2c852f9f92b135eaef7a1c33d31f471c718fe765756d346b6b35543241896ce
+      image: ghcr.io/maarlab-rethinking/postgresql:16.14-202607201049-system-bookworm@sha256:516ceb54265556255d869a147b46d38fa472dff6e0d2120768fbfd6395457624
     - major: 17
-      image: ghcr.io/maarlab-rethinking/postgresql:17.10-202607131058-system-bookworm@sha256:f15719525978c254f756add1ebdfd2c824a7fbe24850b65695c3af38e92048da
+      image: ghcr.io/maarlab-rethinking/postgresql:17.10-202607201049-system-bookworm@sha256:895a68ae76fc1c57184e998eee78472e96eb0ae2626c83b518cc6f174ae11bd2
     - major: 18
-      image: ghcr.io/maarlab-rethinking/postgresql:18.4-202607131058-system-bookworm@sha256:fca6c2d44ef9d427aae4875a341e304fd2d1fea3736ac06019cd4f3642e35cd5
+      image: ghcr.io/maarlab-rethinking/postgresql:18.4-202607201049-system-bookworm@sha256:978efcd7966e24a908e207828f2368dd539d24ba8dd1877ffdc938933f6ca6c3
