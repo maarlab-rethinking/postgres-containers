@@ -6,19 +6,19 @@ metadata:
     images.cnpg.io/family: postgresql
     images.cnpg.io/type: system
     images.cnpg.io/os: bullseye
-    images.cnpg.io/date: '20260727'
+    images.cnpg.io/date: '20260804'
     images.cnpg.io/publisher: cnpg.io
 spec:
   images:
     - major: 13
       image: ghcr.io/maarlab-rethinking/postgresql:13.22-202511030826-system-bullseye@sha256:97c831246cc9588c0a1298be58c32ed4970acd4cf5d21a9869b7083033cea026
     - major: 14
-      image: ghcr.io/maarlab-rethinking/postgresql:14.23-202607271117-system-bullseye@sha256:c9c199481a18e1498b724a7cec9f2f4f131bd8887c536961a3f1aef5960731df
+      image: ghcr.io/maarlab-rethinking/postgresql:14.23-202608031119-system-bullseye@sha256:80898490135afe84322ee25e1ec3b8473f015c8379a679092db939dba8911b63
     - major: 15
-      image: ghcr.io/maarlab-rethinking/postgresql:15.18-202607271117-system-bullseye@sha256:78467596d2c133b55efc596d04886884bffb04e2f84a474785ece29b0b48d164
+      image: ghcr.io/maarlab-rethinking/postgresql:15.18-202608031119-system-bullseye@sha256:d23f26aca00965b94fcc27bf2b7b5201490f1e8ac2691d467366b05733bf376e
     - major: 16
-      image: ghcr.io/maarlab-rethinking/postgresql:16.14-202607271117-system-bullseye@sha256:fbb5f3b2ab1a9427e6388ecb04168994bcc4b05e9be34598708c0993d92a8bbe
+      image: ghcr.io/maarlab-rethinking/postgresql:16.14-202608031119-system-bullseye@sha256:2f1892fc4d6ab8a0d946b334ea2b0e03f98390f49daf6b5ffdb74fad0703d3db
     - major: 17
-      image: ghcr.io/maarlab-rethinking/postgresql:17.10-202607271117-system-bullseye@sha256:7ed98a8969adf4d8fa7814b8196a3178432365237917cfee75eab308cd49e623
+      image: ghcr.io/maarlab-rethinking/postgresql:17.10-202608031119-system-bullseye@sha256:b5b485327b8a563e9821bfd3f85c75a79e37e291a4cd041ac6dde4b76bfdb698
     - major: 18
-      image: ghcr.io/maarlab-rethinking/postgresql:18.4-202607271117-system-bullseye@sha256:c66efa631af6f3da531622341258d503a6dbc9c16c3a7c23fafd8baafab170c8
+      image: ghcr.io/maarlab-rethinking/postgresql:18.4-202608041437-system-bullseye@sha256:148593410486baaf4ac361c6e8367c87818d1a36bf7cf53805678e20aceaa65d
