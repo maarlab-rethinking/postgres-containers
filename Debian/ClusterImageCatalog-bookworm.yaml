@@ -6,19 +6,19 @@ metadata:
     images.cnpg.io/family: postgresql
     images.cnpg.io/type: system
     images.cnpg.io/os: bookworm
-    images.cnpg.io/date: '20260810'
+    images.cnpg.io/date: '20260824'
     images.cnpg.io/publisher: cnpg.io
 spec:
   images:
     - major: 13
       image: ghcr.io/maarlab-rethinking/postgresql:13.22-202511030826-system-bookworm@sha256:4dd3e6d6cc5a8ccb42df25c26aa58173e338eea165364a0230e26e315f6b50f4
     - major: 14
-      image: ghcr.io/maarlab-rethinking/postgresql:14.23-202608100917-system-bookworm@sha256:34bc67597a831e533ea42cd65e2ee8ec550c85484be1d6b0014bd67c4490e0f3
+      image: ghcr.io/maarlab-rethinking/postgresql:14.24-202608241337-system-bookworm@sha256:1257739235ef774a7dbbc132631de009dd20c27f1acc8eeb6b2785c25eacd1bb
     - major: 15
-      image: ghcr.io/maarlab-rethinking/postgresql:15.18-202608100917-system-bookworm@sha256:8675b73876268b03f39e8c13be96ed225f1869268c336a098f29db4b765523da
+      image: ghcr.io/maarlab-rethinking/postgresql:15.19-202608240844-system-bookworm@sha256:1bb9052a8bd4ff78b77aa7de76e6d851a09d8556713419b22a54b3dad95c73ab
     - major: 16
-      image: ghcr.io/maarlab-rethinking/postgresql:16.14-202608100917-system-bookworm@sha256:e157dd637e7d38523dac21f54d44647c8020388ba42121562e2d8cbe328d8ef3
+      image: ghcr.io/maarlab-rethinking/postgresql:16.15-202608240844-system-bookworm@sha256:6ff028a87bdafe97c1567b0b6af711518e553f0bd8df394c1424611cad051433
     - major: 17
-      image: ghcr.io/maarlab-rethinking/postgresql:17.10-202608100917-system-bookworm@sha256:72019f513f7c97357d460640f7ba55c58d954dd43387c7f99db7de94a33175f0
+      image: ghcr.io/maarlab-rethinking/postgresql:17.11-202608240844-system-bookworm@sha256:d26bcee63d6bab2536be7a017694bc71abf601ec40e50bc7fc4501e8fada460a
     - major: 18
-      image: ghcr.io/maarlab-rethinking/postgresql:18.4-202608100917-system-bookworm@sha256:6561a00d664a43c36f4112c2fd55ec93e4ff556d44d473f14e0075af2dcd10a3
+      image: ghcr.io/maarlab-rethinking/postgresql:18.6-202608240844-system-bookworm@sha256:5c20300c7690425ff523cedc27ad7932e9c7fcc51705fde3cc888d27a54bc48b
