@@ -25,6 +25,8 @@ This repository provides maintenance scripts for generating
 |    14   | 2021-09-30   | 2026-11-12 |
 |    13   | 2020-09-24   | 2025-11-13 |
 
+In addition, PostgreSQL 19 Beta 3 is provided for testing purposes only.
+
 These images are designed to serve as operands of the
 [CloudNativePG (CNPG) operator](https://cloudnative-pg.io) in Kubernetes
 environments, and are not intended for standalone use.
@@ -286,6 +288,46 @@ vulnerabilities before they are published or deployed:
 
 For detailed instructions on building PostgreSQL container images, refer to the
 [BUILD.md](BUILD.md) file.
+
+## Automated updates with Renovate
+
+[Renovate](https://github.com/renovatebot/renovate) can be used to automatically update various dependencies.
+As CloudNativePG's `Cluster` CRDs are not automatically picked up by Renovate, a custom regex manager must be configured.
+The example below uses [JSON5](https://json5.org/); save it as `renovate.json5`, or convert keys/comments for use in `renovate.json`:
+
+```json5
+{
+  customManagers: [
+    {
+      // CloudNativePG Cluster imageName
+      customType: 'regex',
+      managerFilePatterns: [
+        '/\\.yaml$/',
+      ],
+      matchStrings: [
+        'imageName: (?<depName>[^\\s:]+):(?<currentValue>[^\\s@]+)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?',
+      ],
+      datasourceTemplate: 'docker',
+      // matches: 17.6-202509151215-minimal-trixie
+      versioningTemplate: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)-(?<patch>\\d+)-(?<compatibility>\\S+)$',
+      autoReplaceStringTemplate: 'imageName: {{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{/if}}',
+    }
+  ],
+  packageRules: [
+    {
+      matchPackageNames: ['ghcr.io/cloudnative-pg/postgresql'],
+      matchUpdateTypes: ['major'],
+      dependencyDashboardApproval: true,
+    }
+  ]
+}
+```
+
+Renovate will never change the `compatibility` part of the tag (image flavour and Debian base, e.g. `system-bookworm`), so upgrades stay on the same OS and glibc/ICU.
+Switching to a different base (e.g. from `bookworm` to `trixie`) is a manual operation because of [PostgreSQL locale-data implications](https://wiki.postgresql.org/wiki/Locale_data_changes).
+PostgreSQL major-version updates are routed through the [dependency dashboard](https://docs.renovatebot.com/key-concepts/dashboard/) so they can be planned and applied by a human.
+To keep references fully reproducible, you can also enable [`pinDigests`](https://docs.renovatebot.com/configuration-options/#pindigests) scoped to the CloudNativePG image.
+If your repository contains other YAML manifests, narrow `managerFilePatterns` to the directory holding your `Cluster` resources, e.g. `'/clusters/.*\\.yaml$/'`.
 
 ## License and copyright
 

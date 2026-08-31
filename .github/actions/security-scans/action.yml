@@ -22,7 +22,7 @@ runs:
   using: composite
   steps:
     - name: Log in to the GitHub Container registry
-      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4
+      uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
       with:
         registry: ghcr.io
         username: ${{ inputs.registry_user }}
@@ -38,7 +38,7 @@ runs:
         accept-filenames: usr/share/postgresql-common/pgdg/apt.postgresql.org.asc,etc/ssl/private/ssl-cert-snakeoil.key,usr/local/lib/python3.9/dist-packages/azure/core/settings.py,usr/local/lib/python3.11/dist-packages/azure/core/settings.py,usr/local/lib/python3.13/dist-packages/azure/core/settings.py
 
     - name: Snyk
-      uses: snyk/actions/docker@master
+      uses: snyk/actions/docker@12140f4059e244892ae643824a95459a102120dd # master
       id: snyk
       if: ${{ inputs.snyk_token != '' }}
       # Snyk can be used to break the build when it detects vulnerabilities.
@@ -58,7 +58,7 @@ runs:
         sed -i 's/"security-severity": "undefined"/"security-severity": "0"/g' snyk.sarif
 
     - name: Upload result to GitHub Code Scanning
-      uses: github/codeql-action/upload-sarif@e46ed2cbd01164d986452f91f178727624ae40d7 # v4
+      uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
       if: ${{ hashFiles('snyk.sarif') != '' }}
       with:
         sarif_file: snyk.sarif

@@ -33,6 +33,7 @@ postgreSQLVersions = [
 // Preview versions are automatically filtered out if present in the stable list
 // MANUALLY EDIT THE CONTENT - AND UPDATE THE README.md FILE TOO
 postgreSQLPreviewVersions = [
+  "19~beta3",
 ]
 
 // Extensions version mapping for each PostgreSQL major version
@@ -57,7 +58,7 @@ extensionsVersionMap = {
 
 // Barman version to build
 // renovate: datasource=pypi versioning=loose depName=barman
-barmanVersion = "3.18.0"
+barmanVersion = "3.19.1"
 
 // Extensions to be included in the `standard` image
 extensions = [
@@ -86,11 +87,11 @@ extensionDistroConstraints = {
 
 // Debian base images
 // renovate: datasource=docker versioning=loose depName=debian
-trixieImage = "debian:trixie-slim@sha256:cedb1ef40439206b673ee8b33a46a03a0c9fa90bf3732f54704f99cb061d2c5a"
+trixieImage = "debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132"
 // renovate: datasource=docker versioning=loose depName=debian
-bookwormImage = "debian:bookworm-slim@sha256:f9c6a2fd2ddbc23e336b6257a5245e31f996953ef06cd13a59fa0a1df2d5c252"
+bookwormImage = "debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe64d6990e4b07ea4171"
 // renovate: datasource=docker versioning=loose depName=debian
-bullseyeImage = "debian:bullseye-slim@sha256:1a4701c321b1d28b1ff5f0230e766791e4b79b1d4c6c7a70064f4b297b1a330f"
+bullseyeImage = "debian:bullseye-slim@sha256:e5b6442dd2e9684cf5e87d8338b5968f3b348636fc0be6d7850a381e3731a2bd"
 
 group "default" {
   targets = ["standard-targets", "extra-targets"]
@@ -103,6 +104,9 @@ target "_common" {
   ]
   dockerfile = "Dockerfile"
   context = "."
+  output = [
+    "type=image,oci-mediatypes=true,oci-artifact=true",
+  ]
   attest = [
     "type=provenance,mode=max",
     "type=sbom"
@@ -177,7 +181,15 @@ target "extra-targets" {
   platforms = ["linux/amd64"]
   matrix = {
     tgt = ["extra"]
-    pgVersion = getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions)
+    // Only build majors covered by `extensionsVersionMap`: the extra
+    // extensions have no packages yet for the newest (preview) majors.
+    pgVersion = [
+      for v in getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions) : v
+      if length([
+        for ext in extraExtensions : ext
+        if !contains(keys(extensionsVersionMap[ext]), getMajor(v))
+      ]) == 0
+    ]
     base = [
       trixieImage,
       bookwormImage,

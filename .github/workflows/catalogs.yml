@@ -20,13 +20,13 @@ jobs:
     steps:
       # TODO: remove this step once system images are EOL
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           path: postgres-containers
           token: ${{ secrets.REPO_GHA_PAT }}
 
       - name: Checkout artifacts
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           path: artifacts
           repository: maarlab-rethinking/artifacts
@@ -52,7 +52,7 @@ jobs:
           yq -i '.metadata.name = "postgresql"' postgres-containers/Debian/ClusterImageCatalog-bookworm.yaml
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 
       - name: Sign catalogs
         run: |
@@ -74,7 +74,7 @@ jobs:
           git status
           git diff --staged
 
-      - uses: EndBug/add-and-commit@290ea2c423ad77ca9c62ae0f5b224379612c0321 # v10
+      - uses: EndBug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8 # v11
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           cwd: 'artifacts'
@@ -102,7 +102,7 @@ jobs:
           git diff --staged
 
       # TODO: remove this step once system images are EOL
-      - uses: EndBug/add-and-commit@290ea2c423ad77ca9c62ae0f5b224379612c0321 # v10
+      - uses: EndBug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8 # v11
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           cwd: 'postgres-containers'
