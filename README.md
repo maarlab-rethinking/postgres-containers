@@ -315,7 +315,7 @@ The example below uses [JSON5](https://json5.org/); save it as `renovate.json5`,
   ],
   packageRules: [
     {
-      matchPackageNames: ['ghcr.io/cloudnative-pg/postgresql'],
+      matchPackageNames: ['ghcr.io/maarlab-rethinking/postgresql'],
       matchUpdateTypes: ['major'],
       dependencyDashboardApproval: true,
     }
