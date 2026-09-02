@@ -1,0 +1,52 @@
+name: Validate bake definitions
+
+# The bake files are only exercised by the weekly build and by pull requests,
+# so a syntax error or an unmapped PostgreSQL major introduced by a merge from
+# upstream would otherwise stay hidden until the next Monday.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  validate:
+    name: Validate bake definitions
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4
+
+      - name: Resolve the upstream targets
+        run: docker buildx bake -f docker-bake.hcl --print > /dev/null
+
+      - name: Resolve every target, extra images included
+        run: |
+          docker buildx bake \
+            -f docker-bake.hcl -f docker-bake.extra.hcl \
+            --print all > /dev/null
+
+      # The extra targets cannot read the base images out of the upstream
+      # matrix, so they carry their own copy. Renovate groups both under
+      # "Debian base images" and updates them in a single PR; this catches the
+      # case where they get out of step anyway.
+      - name: Check both files agree on the Debian base images
+        run: |
+          pattern='debian:[a-z]*-slim@sha256:[0-9a-f]*'
+          grep -o "${pattern}" docker-bake.hcl       | sort -u > /tmp/base.txt
+          grep -o "${pattern}" docker-bake.extra.hcl | sort -u > /tmp/extra.txt
+          if ! diff -u /tmp/base.txt /tmp/extra.txt; then
+            echo "::error::docker-bake.hcl and docker-bake.extra.hcl disagree on the Debian base images"
+            exit 1
+          fi
+          echo "Both files pin the same base images:"
+          cat /tmp/base.txt
