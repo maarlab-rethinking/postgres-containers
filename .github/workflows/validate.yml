@@ -45,7 +45,7 @@ jobs:
           grep -o "${pattern}" docker-bake.hcl       | sort -u > /tmp/base.txt
           grep -o "${pattern}" docker-bake.extra.hcl | sort -u > /tmp/extra.txt
           if ! diff -u /tmp/base.txt /tmp/extra.txt; then
-            echo "::error::docker-bake.hcl and docker-bake.extra.hcl disagree on the Debian base images"
+            echo "::error::docker-bake.hcl and docker-bake.extra.hcl disagree on the Debian base images. Run hack/sync-base-images.sh to line them up."
             exit 1
           fi
           echo "Both files pin the same base images:"
