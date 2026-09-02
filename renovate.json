@@ -15,7 +15,8 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/docker-bake.hcl/"
+        "/docker-bake\\.hcl/",
+        "/docker-bake\\.extra\\.hcl/"
       ],
       "matchStrings": [
         "\\/\\/\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+(versioning=(?<versioning>.*?))?\\s+\"(?<depName>[^:]+):(?<currentValue>[^\\s@]+)(@(?<currentDigest>sha256:[0-9a-f]*))?\"",

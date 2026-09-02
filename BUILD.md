@@ -5,7 +5,15 @@ CloudNativePG using [Docker Bake](https://docs.docker.com/build/bake/) and a
 [GitHub workflow](.github/workflows/bake.yml).
 
 The central component of this framework is the
-[Bake file (`docker-bake.hcl`)](docker-bake.hcl).
+[Bake file (`docker-bake.hcl`)](docker-bake.hcl), which is kept as close as
+possible to the one upstream so changes from `cloudnative-pg` merge cleanly.
+The `extra` image variants this fork adds on top, carrying Citus and PostGIS,
+live in [`docker-bake.extra.hcl`](docker-bake.extra.hcl). Building them means
+loading both files and asking for the `all` group:
+
+```bash
+docker buildx bake -f docker-bake.hcl -f docker-bake.extra.hcl all
+```
 
 ## Prerequisites
 

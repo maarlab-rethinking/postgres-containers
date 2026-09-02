@@ -52,6 +52,8 @@ jobs:
     with:
       environment: ${{ github.event.inputs.environment }}
       postgresql_version: ${{ matrix.version }}
+      bake_files: "./docker-bake.hcl,./docker-bake.extra.hcl"
+      target: "all"
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
