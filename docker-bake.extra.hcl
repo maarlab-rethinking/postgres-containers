@@ -84,7 +84,6 @@ target "extra-targets" {
     BASE = "${base}"
     EXTENSIONS = "${getExtensionsString(pgVersion, extensions)}"
     EXTRA_EXTENSIONS = "${getExtensionsString(pgVersion, getExtraExtensionsForDistro(pgVersion, base, extraExtensions))}"
-    PRELOAD_LIBRARIES = "${join(",", concat(extensions, getExtraExtensionsForDistro(pgVersion, base, extraExtensions)))}"
     STANDARD_ADDITIONAL_POSTGRES_PACKAGES = "${getStandardAdditionalPostgresPackagesPerMajorVersion(getMajor(pgVersion))}"
     BARMAN_VERSION = "${barmanVersion}"
   }

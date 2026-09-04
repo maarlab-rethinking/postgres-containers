@@ -140,6 +140,23 @@ These images are identified by the `extra` tag, for example: `17.6-extra-trixie`
 > In these cases, the `extra` image is still built but only includes the
 > supported extensions for that combination.
 
+The image installs the extension packages; loading them is the `Cluster`'s
+job, as it is for every operand image. Citus in particular needs to be
+preloaded, so declare it on the `Cluster` rather than expecting the image to
+do it:
+
+```yaml
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+spec:
+  imageName: ghcr.io/maarlab-rethinking/postgresql:17.11-extra-trixie
+  postgresql:
+    shared_preload_libraries:
+      - citus
+```
+
+PostGIS needs no preloading, only `CREATE EXTENSION postgis`.
+
 ### System Images (deprecated)
 
 Starting from September 2025, system images are based on the `standard` image

@@ -103,7 +103,6 @@ target "default" {
     PG_MAJOR = "${getMajor(pgVersion)}"
     BASE = "${base}"
     EXTENSIONS = "${getExtensionsString(pgVersion, extensions)}"
-    PRELOAD_LIBRARIES = "${join(",", extensions)}"
     STANDARD_ADDITIONAL_POSTGRES_PACKAGES = "${getStandardAdditionalPostgresPackagesPerMajorVersion(getMajor(pgVersion))}"
     BARMAN_VERSION = "${barmanVersion}"
   }
