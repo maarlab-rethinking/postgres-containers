@@ -31,7 +31,7 @@ supported_img_types = ["minimal", "standard", "system"]
 supported_os_names = ["bullseye", "bookworm", "trixie"]
 min_supported_major = 13
 
-default_registry = "ghcr.io/maarlab-rethinking/postgresql"
+default_registry = "ghcr.io/cloudnative-pg/postgresql"
 default_family = "postgresql"
 default_regex = r"(\d+)(?:\.\d+|beta\d+|rc\d+|alpha\d+)-(\d{12})"
 _token_cache = {"value": None, "expires_at": 0}
