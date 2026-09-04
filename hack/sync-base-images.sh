@@ -16,17 +16,23 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 main="docker-bake.hcl"
 extra="docker-bake.extra.hcl"
 
-changed=0
-for distro in trixie bookworm bullseye; do
-	image="$(grep -o "debian:${distro}-slim@sha256:[0-9a-f]\{64\}" "${main}" | head -1)"
-	if [ -z "${image}" ]; then
-		echo "error: no ${distro} base image found in ${main}" >&2
-		exit 1
-	fi
+# The distributions are whatever docker-bake.hcl currently pins, so adding or
+# retiring one upstream needs no change here.
+mapfile -t images < <(grep -o 'debian:[a-z]\+-slim@sha256:[0-9a-f]\{64\}' "${main}" | sort -u)
 
-	current="$(grep -o "^${distro}Image = \"[^\"]*\"" "${extra}" | sed 's/.*"\(.*\)"/\1/')"
+if [ "${#images[@]}" -eq 0 ]; then
+	echo "error: no Debian base images found in ${main}" >&2
+	exit 1
+fi
+
+changed=0
+for image in "${images[@]}"; do
+	distro="${image#debian:}"
+	distro="${distro%%-slim@*}"
+
+	current="$(sed -n "s/^${distro}Image = \"\(.*\)\"$/\1/p" "${extra}")"
 	if [ -z "${current}" ]; then
-		echo "error: no ${distro}Image variable found in ${extra}" >&2
+		echo "error: ${extra} has no ${distro}Image variable for ${image}" >&2
 		exit 1
 	fi
 
@@ -37,6 +43,17 @@ for distro in trixie bookworm bullseye; do
 	fi
 done
 
+# Anything pinned only in the extra file would silently keep building on a
+# stale base, so treat it as an error rather than leaving it behind.
+mapfile -t orphans < <(
+	grep -o '^[a-z]\+Image' "${extra}" | sed 's/Image$//' | sort -u |
+		grep -vxF -f <(printf '%s\n' "${images[@]}" | sed 's/^debian:\([a-z]*\)-slim@.*/\1/' | sort -u) || true
+)
+if [ "${#orphans[@]}" -gt 0 ]; then
+	echo "error: ${extra} pins ${orphans[*]}, which ${main} no longer builds" >&2
+	exit 1
+fi
+
 if [ "${changed}" -eq 0 ]; then
-	echo "${extra} already matches ${main}"
+	echo "${extra} already matches ${main} (${#images[@]} distributions)"
 fi
