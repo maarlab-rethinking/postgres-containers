@@ -14,8 +14,9 @@ git config merge.ours.driver true
 
 The second line enables the `merge=ours` driver that
 [`.gitattributes`](.gitattributes) relies on to keep our generated image
-catalogs on every merge. Without it those four files conflict by hand every
-time; git falls back to an ordinary conflict, never to a wrong resolution.
+catalogs on every merge. Without it every one of those files has to be
+resolved by hand each time; git falls back to an ordinary conflict, never to a
+wrong resolution.
 
 ## Bringing in upstream changes
 
@@ -46,6 +47,19 @@ Then, before committing the merge:
    purpose, and still builds as `minimal`, `standard` and `system`. To offer
    the extra variants for it, add the major to `extensionsVersionMap` in
    `docker-bake.hcl`.
+
+### When upstream retires a Debian release
+
+`merge=ours` does not cover it. Deleting a file we have modified is a
+modify/delete conflict, which is resolved at the tree level and never reaches
+a merge driver, so the catalogs for the retired release arrive conflicted and
+have to be `git rm`-ed. The release then has to come out of
+`docker-bake.extra.hcl` by hand in three places -- the `<distro>Image`
+variable, the `extra-targets` base list, and any entry in
+`extensionDistroConstraints`. `hack/sync-base-images.sh` refuses to pass until
+that is done, naming the release it still finds. Bullseye went this way in
+September 2026, when its Debian LTS ended and every build on it started
+404-ing.
 
 Anything the merge breaks belongs in the merge commit itself, not in a
 follow-up fix.
