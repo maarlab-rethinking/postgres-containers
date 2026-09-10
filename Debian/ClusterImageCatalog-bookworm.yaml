@@ -6,19 +6,19 @@ metadata:
     images.cnpg.io/family: postgresql
     images.cnpg.io/type: system
     images.cnpg.io/os: bookworm
-    images.cnpg.io/date: '20260831'
+    images.cnpg.io/date: '20260910'
     images.cnpg.io/publisher: cnpg.io
 spec:
   images:
     - major: 13
       image: ghcr.io/maarlab-rethinking/postgresql:13.22-202511030826-system-bookworm@sha256:4dd3e6d6cc5a8ccb42df25c26aa58173e338eea165364a0230e26e315f6b50f4
     - major: 14
-      image: ghcr.io/maarlab-rethinking/postgresql:14.24-202608311549-system-bookworm@sha256:322317096a639899aba5a1f9d2d19bf7298db65bbad87406f04769cc3345d43f
+      image: ghcr.io/maarlab-rethinking/postgresql:14.24-202609101554-system-bookworm@sha256:0d047d1d6aa1ea832415a2c98140e0664d200389878a0630991fe2a295da4146
     - major: 15
-      image: ghcr.io/maarlab-rethinking/postgresql:15.19-202608311550-system-bookworm@sha256:3c731d8d9c7029cea4d75f3c32d66a4f44f7ef39d727c355f5032e7de198a503
+      image: ghcr.io/maarlab-rethinking/postgresql:15.19-202609101554-system-bookworm@sha256:a6fd5c4a5fb0a1adcd841c1844182c36b6585d5924cbcba179d4ac3b11b3920a
     - major: 16
-      image: ghcr.io/maarlab-rethinking/postgresql:16.15-202608311549-system-bookworm@sha256:f80bd079356b1568e356199b31616c9dc5eeb289d565b19204cd9761ef2a419c
+      image: ghcr.io/maarlab-rethinking/postgresql:16.15-202609101554-system-bookworm@sha256:5e4bf4f21411e636cb69850f2805663f0159528b6d4c0457908659eb21f98d13
     - major: 17
-      image: ghcr.io/maarlab-rethinking/postgresql:17.11-202608311549-system-bookworm@sha256:89309c23ae25e8fca01788cc565ca723830666e77b5f506e75a128f1ec153243
+      image: ghcr.io/maarlab-rethinking/postgresql:17.11-202609101554-system-bookworm@sha256:067ecc8a4f0be8e2b87add6461d21352d0eae1a6325fcfeaf2f1f518d3edcefa
     - major: 18
-      image: ghcr.io/maarlab-rethinking/postgresql:18.6-202608311549-system-bookworm@sha256:2c4033217df646c16a8ab73e5b5070217bc1e042ef5066970dd99e97f541e6c6
+      image: ghcr.io/maarlab-rethinking/postgresql:18.6-202609101554-system-bookworm@sha256:0443a7f2e14df6c7eb9ffd6384bb0c9dea2ee2bbdef063329a921d4eefaf94d4
