@@ -38,7 +38,7 @@ runs:
         accept-filenames: usr/share/postgresql-common/pgdg/apt.postgresql.org.asc,etc/ssl/private/ssl-cert-snakeoil.key,usr/local/lib/python3.9/dist-packages/azure/core/settings.py,usr/local/lib/python3.11/dist-packages/azure/core/settings.py,usr/local/lib/python3.13/dist-packages/azure/core/settings.py
 
     - name: Snyk
-      uses: snyk/actions/docker@12140f4059e244892ae643824a95459a102120dd # master
+      uses: snyk/actions/docker@b075801f26076be9bb50521154cafab73f44da0c # master
       id: snyk
       if: ${{ inputs.snyk_token != '' }}
       # Snyk can be used to break the build when it detects vulnerabilities.
@@ -58,7 +58,7 @@ runs:
         sed -i 's/"security-severity": "undefined"/"security-severity": "0"/g' snyk.sarif
 
     - name: Upload result to GitHub Code Scanning
-      uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4
+      uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
       if: ${{ hashFiles('snyk.sarif') != '' }}
       with:
         sarif_file: snyk.sarif

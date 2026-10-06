@@ -33,7 +33,7 @@ postgreSQLVersions = [
 // Preview versions are automatically filtered out if present in the stable list
 // MANUALLY EDIT THE CONTENT - AND UPDATE THE README.md FILE TOO
 postgreSQLPreviewVersions = [
-  "19~beta3",
+  "19~beta4",
 ]
 
 // Extensions version mapping for each PostgreSQL major version
@@ -58,7 +58,7 @@ extensionsVersionMap = {
 
 // Barman version to build
 // renovate: datasource=pypi versioning=loose depName=barman
-barmanVersion = "3.19.1"
+barmanVersion = "3.20.1"
 
 // Extensions to be included in the `standard` image
 extensions = [
@@ -78,9 +78,9 @@ target "default" {
     pgVersion = getPgVersions(postgreSQLVersions, postgreSQLPreviewVersions)
     base = [
       // renovate: datasource=docker versioning=loose
-      "debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132",
+      "debian:trixie-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a",
       // renovate: datasource=docker versioning=loose
-      "debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe64d6990e4b07ea4171"
+      "debian:bookworm-slim@sha256:3783cc01769c7b2b1b83a5c5ad96c815348e28ed7da68e2e3687004faa906251"
     ]
   }
   platforms = [

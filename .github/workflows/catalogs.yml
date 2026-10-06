@@ -14,7 +14,7 @@ defaults:
 jobs:
   update-catalogs:
     name: Updating catalogs
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       id-token: write
     steps:
@@ -82,28 +82,6 @@ jobs:
           message: 'chore: update imageCatalogs'
 
       # TODO: remove this step once system images are EOL
-      - name: Temporarily disable "include administrators" branch protection
-        if: ${{ always() && github.ref == 'refs/heads/main' }}
-        id: disable_include_admins
-        env:
-          GH_TOKEN: ${{ secrets.REPO_GHA_PAT }}
-        run: |
-          set -euo pipefail
-          endpoint="repos/${GITHUB_REPOSITORY}/branches/main/protection/enforce_admins"
-          if enabled="$(gh api "${endpoint}" --jq .enabled 2>/dev/null)"; then
-            echo "initial_status=${enabled}" >> "${GITHUB_OUTPUT}"
-            if [ "${enabled}" = "true" ]; then
-              gh api -X DELETE "${endpoint}" --silent
-              echo "enforce_admins disabled on main"
-            else
-              echo "enforce_admins was already off"
-            fi
-          else
-            echo "initial_status=" >> "${GITHUB_OUTPUT}"
-            echo "main is not protected; nothing to disable"
-          fi
-
-      # TODO: remove this step once system images are EOL
       - name: Legacy diff
         working-directory: postgres-containers
         run: |
@@ -120,18 +98,3 @@ jobs:
           author_name: CloudNativePG Automated Updates
           author_email: noreply@cnpg.com
           message: 'chore: update imageCatalogs'
-
-      # TODO: remove this step once system images are EOL
-      - name: Enable "include administrators" branch protection
-        if: ${{ always() && github.ref == 'refs/heads/main' }}
-        env:
-          GH_TOKEN: ${{ secrets.REPO_GHA_PAT }}
-          INITIAL_STATUS: ${{ steps.disable_include_admins.outputs.initial_status }}
-        run: |
-          set -euo pipefail
-          if [ "${INITIAL_STATUS}" = "true" ]; then
-            gh api -X POST "repos/${GITHUB_REPOSITORY}/branches/main/protection/enforce_admins" --silent
-            echo "enforce_admins restored on main"
-          else
-            echo "enforce_admins was not enabled before; leaving it off"
-          fi
